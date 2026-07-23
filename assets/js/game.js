@@ -57,6 +57,15 @@ class Game {
 
                 // agent
                 if (e.key == "p") this.autoplay = !this.autoplay;
+                if (e.key == "P") {
+                    if (this.interval_speed == 15) this.interval_speed = 120;
+                    else this.interval_speed = 15;
+
+                    clearInterval(this.interval);
+                    this.interval = setInterval(() => {
+                        this.intervalTasks();
+                    }, this.interval_speed);
+                }
             } else {
                 throw "Error: undefined state";
             }
@@ -64,24 +73,32 @@ class Game {
 
         // agent things
         this.autoplay = false;
+        this.interval_speed = 15; // 150
         this.agent = new DirectedRandomAgent(this);
 
         // start after assets are loaded
         this.spritesheet.onload = () => {
             // draw call
-            setInterval(() => { 
-                this.draw();
-                if (this.autoplay && this.state == STATES.running) this.agent.act();
-            // }, 120);
+            this.interval = setInterval(() => {
+                this.intervalTasks();
+                // this.draw();
+                // if (this.autoplay && this.state == STATES.running) this.agent.act();
+                // }, 120);
             }, 15);
 
             // agent call
             // setInterval(() => {
-                // if (this.autoplay && this.state == STATES.running) this.agent.act();
+            // if (this.autoplay && this.state == STATES.running) this.agent.act();
             // }, 100); 
 
             this.showTitle();
         };
+    }
+
+    // run inside setInterval
+    intervalTasks() {
+        this.draw();
+        if (this.autoplay && this.state == STATES.running) this.agent.act();
     }
 
     // scores
