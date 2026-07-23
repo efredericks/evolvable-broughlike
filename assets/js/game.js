@@ -247,7 +247,7 @@ class Game {
         if (this.autoplay)
             this.agent.act();
 
-        this.game_map.turns++;
+        this.turns++;
 
         // swap game state
         if (this.player.dead) {
