@@ -28,6 +28,7 @@ class Game {
         // setup map
         this.level = 1;
         this.score = 0;
+        this.turns = 0;
 
         this.shakeAmount = 0;
         this.shakeX = 0;
@@ -71,7 +72,8 @@ class Game {
             setInterval(() => { 
                 this.draw();
                 if (this.autoplay && this.state == STATES.running) this.agent.act();
-            }, 120);//15);
+            // }, 120);
+            }, 15);
 
             // agent call
             // setInterval(() => {
@@ -89,9 +91,9 @@ class Game {
         else
             return []
     }
-    addScore(score, won) {
+    addScore(score, turns, won) {
         let scores = this.getScores();
-        let scoreObject = { score: score, run: 1, totalScore: score, active: won };
+        let scoreObject = { score: score, turns: turns, run: 1, totalScore: score, active: won };
         let lastScore = scores.pop();
 
         if (lastScore) {
@@ -110,7 +112,7 @@ class Game {
         let scores = this.getScores();
         if (scores.length) {
             this.drawText(
-                rightPad(["RUN", "SCORE", "TOTAL"]),
+                rightPad(["RUN", "TURNS", "SCORE", "TOTAL"]),
                 18,
                 true,
                 this.canvas.height / 2 + 40,
@@ -124,7 +126,7 @@ class Game {
             scores.unshift(newestScore);
 
             for (let i = 0; i < Math.min(10, scores.length); i++) {
-                let scoreText = rightPad([scores[i].run, scores[i].score, scores[i].totalScore]);
+                let scoreText = rightPad([scores[i].run, scores[i].turns, scores[i].score, scores[i].totalScore]);
                 this.drawText(
                     scoreText,
                     18,
@@ -153,6 +155,7 @@ class Game {
     startGame() {
         this.level = 1;
         this.score = 0;
+        this.turns = 0;
         this.autoplay = false;
 
         this.startLevel(SPRITES.player.hp);
@@ -227,10 +230,12 @@ class Game {
         if (this.autoplay)
             this.agent.act();
 
+        this.game_map.turns++;
+
         // swap game state
         if (this.player.dead) {
             this.state = STATES.dead;
-            this.addScore(this.score, false);
+            this.addScore(this.score, this.turns, false);
         }
 
         // spawn more monsters

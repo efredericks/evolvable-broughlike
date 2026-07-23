@@ -106,7 +106,7 @@ class StairsDown extends Tile {
     stepOn(monster) {
         if (monster.isPlayer) {
             if (this.game.level == numLevels) {
-                this.game.addScore(this.game.score, true);
+                this.game.addScore(this.game.score, this.game.turns, true);
                 this.game.showTitle();
             } else {
                 this.game.level++;
