@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>evolvable broughlike</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cantarell:ital,wght@0,400;0,700;1,400;1,700&family=Oswald:wght@200..700&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            padding: 0px;
+            margin: 0px;
+        }
+
+        canvas {
+            outline: 1px solid rgba(220, 220, 220, 0.8);
+
+            max-width: 100vw;
+            max-height: 100vh;
+            display: block;
+            margin: 0 auto;
+
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+        }
+
+        body {
+            background-color: #222323;
+            color: #eee;
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        .cantarell-regular {
+            font-family: "Cantarell", sans-serif;
+            font-weight: 400;
+            font-style: normal;
+        }
+
+        .cantarell-bold {
+            font-family: "Cantarell", sans-serif;
+            font-weight: 700;
+            font-style: normal;
+        }
+
+        .cantarell-regular-italic {
+            font-family: "Cantarell", sans-serif;
+            font-weight: 400;
+            font-style: italic;
+        }
+
+        .cantarell-bold-italic {
+            font-family: "Cantarell", sans-serif;
+            font-weight: 700;
+            font-style: italic;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5 {
+            font-family: "Cantarell", sans-serif;
+            font-weight: 700;
+            font-style: normal;
+        }
+
+        #debug {
+            padding: 0 0;
+            width: 25em;
+            position: absolute;
+            right: 5px;
+            top: 5px;
+            border: 1px solid #ff00ff;
+            background: #33333399;
+            color: white;
+            text-align: right;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div id="debug">
+        <pre>if (e.key == "H") this.player.hp = this.player.max_hp;
+if (e.key == "1") spells.TELEPORT(this.player);
+if (e.key == "2") spells.QUAKE(this.player);
+if (e.key == "3") spells.TP_OTHERS(this.player);
+if (e.key == "4") spells.AURA(this.player);
+if (e.key == "5") spells.BOLT(this.player);
+if (e.key == "6") spells.CROSS(this.player);
+if (e.key == "7") spells.EX(this.player);</pre>
+<hr size="1" />
+<pre>if (e.key == "p") toggle autoplay</pre>
+    </div>
+    <!-- <h1>evolvable broughlike</h1> -->
+    <canvas id="game"></canvas>
+    <script src="assets/js/data.js"></script>
+    <script src="assets/js/gp-data.js"></script>
+    <script src="assets/js/util.js"></script>
+    <script src="assets/js/map.js"></script>
+    <script src="assets/js/monster.js"></script>
+    <script src="assets/js/spell.js"></script>
+    <script src="assets/js/tile.js"></script>
+    <script src="assets/js/game.js"></script>
+    <script src="assets/js/agent.js"></script>
+
+    <script>
+        let game;
+        window.addEventListener("load", () => {
+            console.log("Page fully loaded (including images/styles)");
+            game = new Game();
+        });
+    </script>
+</body>
+
+</html>
