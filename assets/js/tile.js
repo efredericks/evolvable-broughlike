@@ -10,12 +10,15 @@ class Tile {
 
         this.effect = null;
         this.effect_counter = 0;
+
+        this.can_burn = false;
+        this.rot = 0;
     }
 
-    update() {}
+    update() { }
 
     draw() {
-        this.game.drawSprite(this.sprite, this.x, this.y);
+        this.game.drawSprite(this.sprite, this.x, this.y, this.rot);
 
         if (this.treasure) {
             this.game.drawSprite(SPRITES.ring, this.x, this.y);
@@ -42,13 +45,16 @@ class Tile {
     }
 
     // replace a tile with another tile
-    replace(newTileType){
+    replace(newTileType) {
         if (this instanceof StairsDown) return;
 
         const newTile = new newTileType(this.game, this.x, this.y);
         if (this.monster) {
             newTile.monster = this.monster;
             this.monster.tile = newTile;
+        }
+        if (this.treasure) {
+            newTile.treasure = this.treasure;
         }
         this.game.game_map.tiles[this.y][this.x] = newTile;
         return newTile;
@@ -78,6 +84,8 @@ class Tile {
         }
         return connectedTiles;
     }
+
+    stepOn() { ; }
 }
 
 class Floor extends Tile {
@@ -96,6 +104,30 @@ class Floor extends Tile {
 class Wall extends Tile {
     constructor(game, x, y) {
         super(game, x, y, SPRITES.wall, false);
+    }
+}
+class River extends Tile {
+    constructor(game, x, y) {
+        super(game, x, y, SPRITES.river, false);
+        this.rot = Math.PI / 2.0;
+    }
+}
+class Bridge extends Tile {
+    constructor(game, x, y) {
+        super(game, x, y, SPRITES.ladder, true);
+        this.rot = 0.0;
+    }
+}
+class Tree extends Tile {
+    constructor(game, x, y) {
+        super(game, x, y, shuffle(TREE_TILES)[0], false);
+        this.can_burn = true;
+    }
+}
+class Grass extends Tile {
+    constructor(game, x, y) {
+        super(game, x, y, SPRITES.grass, true);
+        this.can_burn = true;
     }
 }
 class StairsDown extends Tile {
@@ -119,9 +151,9 @@ class StairsDown extends Tile {
 class Grave extends Tile {
     constructor(game, x, y) {
         super(game, x, y, SPRITES.grave, true);
-        this.hp = SPRITES.fire?.hp ?? 1;
+        this.hp = SPRITES.grave?.hp ?? 1;
     }
-    stepOn() {}
+    stepOn() { }
 
     update() {
         this.hp--;
@@ -137,9 +169,10 @@ class Fire extends Tile {
     }
 
     update() {
-        let neighbors = this.getAdjacentPassableNeighbors();
+        let neighbors = this.getAdjacentNeighbors();
         for (let n of neighbors) {
-            if (n.sprite == SPRITES.grass && Math.random() > FIRE_SPREAD) {
+            // if (n.sprite == SPRITES.grass && Math.random() > FIRE_SPREAD) {
+            if (n.can_burn && Math.random() > FIRE_SPREAD) {
                 n.replace(Fire);
             }
         }
@@ -157,3 +190,4 @@ class Fire extends Tile {
         monster.hit(1);
     }
 }
+const WALKABLE_TILES = [Floor, Grass];

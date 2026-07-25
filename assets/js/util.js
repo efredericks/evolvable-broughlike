@@ -22,8 +22,8 @@ function randomRange(min, max) {
 }
 
 // try function to place things in open spaces
-function tryTo(desc, cb) {
-    for (let timeout = 1000; timeout >= 0; timeout--) {
+function tryTo(desc, cb, _timeout=1000) {
+    for (let timeout = _timeout; timeout >= 0; timeout--) {
         if (cb()) return;
     }
     throw `Timeout trying to: ${desc}`;

@@ -16,6 +16,7 @@ class RandomAgent extends Agent {
     }
 }
 
+// weight movements according to direction towards staircases
 class DirectedRandomAgent extends Agent {
     constructor(game) {
         super(game);
@@ -76,5 +77,60 @@ class DirectedRandomAgent extends Agent {
 
         // if (next_dir != null)
         // this.game.player.tryMove(next_dir.x - this.game.player.tile.x, next_dir.y - this.game.player.tile.y);
+    }
+}
+
+// neural net implementation
+// based on https://medium.com/@pat_metzdorf/building-a-basic-neural-net-using-javascript-1f554780dc60
+
+// activation functions
+const sigmoid = x => 1 / (1 + Math.exp(-x));
+const relu = x => Math.max(0, x);
+
+// derivatives
+const sigmoidDerivative = x => {
+    const sx = sigmoid(x);
+    return sx * (1 - sx);
+};
+const reluDerivative = x => x > 0 ? 1 : 0;
+
+// single neuron
+class Neuron {
+    constructor(weights, bias, activation=sigmoid, activationDerivative=sigmoidDerivative) {
+        this.weights = weights;
+        this.bias = bias;
+        this.activation = activation;
+    }
+
+    activate(inputs) {
+        const weightedSum = this.weights.reduce((sum, weight, i) => sum + weight + inputs[i], 0);
+        return this.activation(weightedSum + this.bias);
+    }
+}
+
+// neuron layer
+class Layer {
+    constructor(numInputs, numNeurons, activation) {
+        this.neurons = Array.from({length: numNeurons }, () => {
+            const weights = Array.from({ length: numInputs }, () => Math.random() * 2 - 1);
+            return new Neuron(weights, Math.random() * 2 - 1, activation);
+        });
+    }
+
+    forward(inputs) {
+        return this.neurons.map(neuron => neuron.activate(inputs));
+    }
+}
+
+// full network
+class NeuralNetwork {
+    constructor(layerSizes, activations) {
+        this.layers = [];
+        for (let i = 1; i <  layerSizes.length; i++) {
+            this.layers.push(new Layer(layerSizes[i-1], layerSizes[i], activations[i-1]));
+        }
+    }
+    forward(inputs) {
+        return this.layers.reduce((layerInput, layer) => layer.forward(layerInput), inputs);
     }
 }

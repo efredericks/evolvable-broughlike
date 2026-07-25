@@ -76,6 +76,9 @@ class Game {
         this.interval_speed = 15; // 150
         this.agent = new DirectedRandomAgent(this);
 
+        // this.nn = new NeuralNetwork([2,3,3,3,4,3,2], [relu, sigmoid]);
+        // console.log(this.nn.forward([1,0]))
+
         // start after assets are loaded
         this.spritesheet.onload = () => {
             // draw call
@@ -221,12 +224,14 @@ class Game {
                 let tile = this.game_map.getTile(c, r);
                 tile.update();
 
-                // grass spread (visual/
-                if (tile.sprite == SPRITES.grass && Math.random() > GRASS_SPREAD) {
+                // rass spread (visual/
+                if (tile instanceof Grass && Math.random() > GRASS_SPREAD) {
+                // if (tile.sprite == SPRITES.grass && Math.random() > GRASS_SPREAD) {
                     let neighbors = tile.getAdjacentPassableNeighbors();
                     for (let n of neighbors) {
-                        if (n instanceof Floor && n.sprite != SPRITES.grass) {
-                            n.sprite = SPRITES.grass;
+                        if (n instanceof Floor) {//} && n.sprite != SPRITES.grass) {
+                            n.replace(Grass);
+                            // n.sprite = SPRITES.grass;
                         }
                     }
                 }
@@ -301,6 +306,7 @@ class Game {
         this.drawText(`Level: ${this.level}/${numLevels}`, 20, false, 40, "violet");
         this.drawText(`Score: ${this.score}`, 20, false, 70, "violet");
         this.drawText(`HP: ${this.player.hp}/${this.player.max_hp}`, 20, false, 100, 'violet')
+        this.drawText(`Turns: ${this.turns}`, 20, false, 130, 'violet')
     }
 
     drawSprite(sprite, x, y, rot = 0) {

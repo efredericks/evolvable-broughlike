@@ -77,8 +77,15 @@ function boltTravel(e, direction, effect, dmg) {
             }
             newTile.setEffect(effect);
 
+            let neighbors = newTile.getAdjacentNeighbors();
+            for (let n of neighbors) {
+                if (n.can_burn && Math.random() > FIRE_SPREAD) {
+                    n.replace(Fire);
+                }
+            }
+
             // add new fire entity to burnable things
-            if (newTile.sprite == SPRITES.grass) {
+            if (newTile.can_burn) {//sprite == SPRITES.grass) {
                 newTile.replace(Fire);
             }
 

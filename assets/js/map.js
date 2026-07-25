@@ -16,6 +16,42 @@ class GameMap {
         for (let i = 0; i < 3; i++) {
             this.randomPassableTile().treasure = true;
         }
+
+        // grab some prefabs perhaps
+        for (let i = 0; i < 5; i++) {
+            let prefab = shuffle(prefabs)[0];
+
+            let sc = randomRange(1, numTiles - prefab[0].length - 1);
+            let sr = randomRange(1, numTiles - prefab.length - 1);
+
+            let _r = 0;
+            let _c = 0;
+
+            for (let _r = 0; _r < prefab.length; _r++) {
+                for (let _c = 0; _c < prefab[_r].length; _c++) {
+
+                    // map to world coords
+                    let r = sr + _r;
+                    let c = sc + _c;
+
+                    // Safely grab the character token
+                    let token = prefab[_r][_c];
+
+                    if (token === "t") {
+                        this.tiles[r][c].replace(Tree);
+                    } else if (token === " " || token === ".") {
+                        this.tiles[r][c].replace(Floor);
+                    }
+                }
+            }
+        }
+
+        let r = randomRange(1, numTiles-2);
+        let lc = randomRange(1, numTiles-2);
+        for (let c = 0; c < numTiles; c++) {
+            if (lc == c) this.tiles[r][c].replace(Bridge);
+            else this.tiles[r][c].replace(River);
+        }
     }
     generateTiles() {
         this.tiles = [];
@@ -29,7 +65,8 @@ class GameMap {
                 if (Math.random() < 0.3) {// || !this.inBounds(c, r)) {
                     this.tiles[r][c] = new Wall(this.game, c, r);
                 } else {
-                    this.tiles[r][c] = new Floor(this.game, c, r);
+                    let t = shuffle(WALKABLE_TILES)[0];
+                    this.tiles[r][c] = new t(this.game, c, r);//Floor(this.game, c, r);
                     passableTiles++;
                 }
             }
@@ -74,7 +111,7 @@ class GameMap {
         this.monsters.push(monster);
     }
 
-    spawnSpecificMonster(monster, tile, tp=2) {
+    spawnSpecificMonster(monster, tile, tp = 2) {
         let m = new monster(this.game, tile);
         m.teleport_counter = tp;
         this.monsters.push(m);
