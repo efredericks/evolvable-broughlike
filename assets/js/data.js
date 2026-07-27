@@ -57,3 +57,6 @@ const AIType = {
     random: 0,
     NN: 1,
 }
+
+let mouseX = 0;
+let mouseY = 0;

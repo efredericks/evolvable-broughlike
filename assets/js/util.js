@@ -4,10 +4,10 @@ function getRandomArray(arr) {
 }
 
 // fisher-yates shuffle
-function shuffle(arr){
+function shuffle(arr) {
     let temp, r;
     for (let i = 1; i < arr.length; i++) {
-        r = randomRange(0,i);
+        r = randomRange(0, i);
         temp = arr[i];
         arr[i] = arr[r];
         arr[r] = temp;
@@ -22,7 +22,7 @@ function randomRange(min, max) {
 }
 
 // try function to place things in open spaces
-function tryTo(desc, cb, _timeout=1000) {
+function tryTo(desc, cb, _timeout = 1000) {
     for (let timeout = _timeout; timeout >= 0; timeout--) {
         if (cb()) return;
     }
@@ -30,14 +30,36 @@ function tryTo(desc, cb, _timeout=1000) {
 }
 
 // text padding
-function rightPad(textArray){
+function rightPad(textArray) {
     let finalText = "";
     textArray.forEach(text => {
-        text+="";
-        for(let i=text.length;i<10;i++){
-            text+=" ";
+        text += "";
+        for (let i = text.length; i < 10; i++) {
+            text += " ";
         }
         finalText += text;
     });
     return finalText;
+}
+
+// transform mouse coords to allow mouseover of entities
+// based on https://jsfiddle.net/mattdeeds/yqLvza57/37/
+function getCanvasCoords(ctx, screenX, screenY) {
+    let matrix = ctx.getTransform();
+    var imatrix = matrix.invertSelf();
+    let x = screenX * imatrix.a + screenY * imatrix.c + imatrix.e;
+    let y = screenX * imatrix.b + screenY * imatrix.d + imatrix.f;
+    return [x, y];
+}
+function getMousePos(canvas, evt) {
+    var rect = canvas.getBoundingClientRect(), // abs. size of element
+        scaleX = canvas.width / rect.width,    // relationship bitmap vs. element for X
+        scaleY = canvas.height / rect.height;  // relationship bitmap vs. element for Y
+
+    return [
+        (evt.clientX - rect.left) * scaleX,
+        (evt.clientY - rect.top) * scaleY];
+}
+function handleMouse(e) {
+    [mouseX, mouseY] = getMousePos(game.canvas, e);
 }

@@ -52,6 +52,11 @@ class GameMap {
             if (lc == c) this.tiles[r][c].replace(Bridge);
             else this.tiles[r][c].replace(River);
         }
+        for (let c = 0; c < numTiles; c++) {
+            this.tiles[r-1][c].replace(Floor);
+            this.tiles[r+1][c].replace(Floor);
+        }
+
     }
     generateTiles() {
         this.tiles = [];

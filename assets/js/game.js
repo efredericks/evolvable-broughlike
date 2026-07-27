@@ -226,7 +226,7 @@ class Game {
 
                 // rass spread (visual/
                 if (tile instanceof Grass && Math.random() > GRASS_SPREAD) {
-                // if (tile.sprite == SPRITES.grass && Math.random() > GRASS_SPREAD) {
+                    // if (tile.sprite == SPRITES.grass && Math.random() > GRASS_SPREAD) {
                     let neighbors = tile.getAdjacentPassableNeighbors();
                     for (let n of neighbors) {
                         if (n instanceof Floor) {//} && n.sprite != SPRITES.grass) {
@@ -300,6 +300,22 @@ class Game {
             this.player.draw();
 
             this.drawUI();
+            this.drawMouse();
+        }
+    }
+    drawMouse() {
+        const ht = tileSize / 2;
+        let [mx, my] = getCanvasCoords(this.ctx, mouseX, mouseY);
+
+        if (mx >= 0 && mx < this.canvas.width - uiWidth * tileSize && my >= 0 && my <= this.canvas.height) {
+            const col = Math.floor(mx / tileSize);
+            const row = Math.floor(my / tileSize);
+
+            const x = col * tileSize;
+            const y = row * tileSize;
+
+            this.ctx.strokeStyle = "#ff00ff";
+            this.ctx.strokeRect(x, y, tileSize, tileSize);
         }
     }
     drawUI() {
