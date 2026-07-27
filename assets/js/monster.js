@@ -10,6 +10,9 @@ class Monster {
 
         this.hp = sprite?.hp ?? -1;
         this.max_hp = sprite?.hp ?? -1;
+
+        this.name = sprite?.name ?? "MISSING";
+        
         this.dead = false;
         this.stunned = false; // can't move
         this.teleport_counter = 2;

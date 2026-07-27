@@ -85,7 +85,16 @@ class Tile {
         return connectedTiles;
     }
 
-    stepOn() { ; }
+
+    stepOn(monster) {
+        if (this.passable) {
+            if (monster.isPlayer && this.treasure) {
+                this.game.score++;
+                this.treasure = false;
+                this.game.game_map.spawnMonster();
+            }
+        }
+    }
 }
 
 class Floor extends Tile {
@@ -93,13 +102,13 @@ class Floor extends Tile {
         super(game, x, y, shuffle(FLOOR_TILES)[0], true);
     }
 
-    stepOn(monster) {
-        if (monster.isPlayer && this.treasure) {
-            this.game.score++;
-            this.treasure = false;
-            this.game.game_map.spawnMonster();
-        }
-    }
+    // stepOn(monster) {
+    //     if (monster.isPlayer && this.treasure) {
+    //         this.game.score++;
+    //         this.treasure = false;
+    //         this.game.game_map.spawnMonster();
+    //     }
+    // }
 }
 class Wall extends Tile {
     constructor(game, x, y) {
@@ -129,6 +138,13 @@ class Grass extends Tile {
         super(game, x, y, SPRITES.grass, true);
         this.can_burn = true;
     }
+    // stepOn(monster) {
+    //     if (monster.isPlayer && this.treasure) {
+    //         this.game.score++;
+    //         this.treasure = false;
+    //         this.game.game_map.spawnMonster();
+    //     }
+    // }
 }
 class StairsDown extends Tile {
     constructor(game, x, y) {
@@ -136,6 +152,7 @@ class StairsDown extends Tile {
     }
 
     stepOn(monster) {
+        super.stepOn(monster);
         if (monster.isPlayer) {
             if (this.game.level == numLevels) {
                 this.game.addScore(this.game.score, this.game.turns, true);
@@ -153,7 +170,6 @@ class Grave extends Tile {
         super(game, x, y, SPRITES.grave, true);
         this.hp = SPRITES.grave?.hp ?? 1;
     }
-    stepOn() { }
 
     update() {
         this.hp--;
@@ -187,7 +203,13 @@ class Fire extends Tile {
     }
 
     stepOn(monster) {
+        super.stepOn(monster);
         monster.hit(1);
+        // if (monster.isPlayer && this.treasure) {
+        //     this.game.score++;
+        //     this.treasure = false;
+        //     this.game.game_map.spawnMonster();
+        // }
     }
 }
 const WALKABLE_TILES = [Floor, Grass];

@@ -12,11 +12,6 @@ class GameMap {
             return this.generateTiles() == this.randomPassableTile().getConnectedTiles().length;
         });
 
-        this.generateMonsters();
-        for (let i = 0; i < 3; i++) {
-            this.randomPassableTile().treasure = true;
-        }
-
         // grab some prefabs perhaps
         for (let i = 0; i < 5; i++) {
             let prefab = shuffle(prefabs)[0];
@@ -55,6 +50,12 @@ class GameMap {
         for (let c = 0; c < numTiles; c++) {
             this.tiles[r-1][c].replace(Floor);
             this.tiles[r+1][c].replace(Floor);
+        }
+
+        // monsters and treasures after all map pcg is done
+        this.generateMonsters();
+        for (let i = 0; i < 3; i++) {
+            this.randomPassableTile().treasure = true;
         }
 
     }

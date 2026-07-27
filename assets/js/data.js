@@ -11,18 +11,18 @@ const FIRE_SPREAD = 0.5;
 
 const SPRITES = {
     // moveable entities: c, r, hp
-    player: { c: 13, r: 0, hp: 89995 },
-    snake: { c: 4, r: 1, hp: 1 },
-    dog: { c: 5, r: 1, hp: 3 },
-    rat: { c: 6, r: 1, hp: 2 },
-    tick: { c: 7, r: 1, hp: 5 },
-    blob: { c: 8, r: 1, hp: 4 },
-    ghost: { c: 9, r: 1, hp: 6 },
-    turtle: { c: 10, r: 1, hp: 8 },
-    octopode: { c: 11, r: 1, hp: 2 },
-    mushroom: { c: 12, r: 1, hp: 4 },
-    fire: { c: 8, r: 8, hp: 5 },
-    trap: { c: 1, r: 8, hp: 3 },
+    player: { c: 13, r: 0, hp: 89995, name: "Player" },
+    snake: { c: 4, r: 1, hp: 1, name: "Snake" },
+    dog: { c: 5, r: 1, hp: 3, name: "Dog" },
+    rat: { c: 6, r: 1, hp: 2, name: "Rat" },
+    tick: { c: 7, r: 1, hp: 5, name: "Tick" },
+    blob: { c: 8, r: 1, hp: 4, name: "Blob" },
+    ghost: { c: 9, r: 1, hp: 6, name: "Ghost" },
+    turtle: { c: 10, r: 1, hp: 8, name: "Turtle" },
+    octopode: { c: 11, r: 1, hp: 2, name: "Octopode" },
+    mushroom: { c: 12, r: 1, hp: 4, name: "Mushroom" },
+    fire: { c: 8, r: 8, hp: 5, name: "Fire" },
+    trap: { c: 1, r: 8, hp: 3, name: "Trap" },
 
     // env:, c, r
     wall: { c: 2, r: 1 },
@@ -60,3 +60,5 @@ const AIType = {
 
 let mouseX = 0;
 let mouseY = 0;
+let hoverRow = -1;
+let hoverCol = -1;

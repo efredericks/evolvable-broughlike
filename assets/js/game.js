@@ -308,14 +308,17 @@ class Game {
         let [mx, my] = getCanvasCoords(this.ctx, mouseX, mouseY);
 
         if (mx >= 0 && mx < this.canvas.width - uiWidth * tileSize && my >= 0 && my <= this.canvas.height) {
-            const col = Math.floor(mx / tileSize);
-            const row = Math.floor(my / tileSize);
+            hoverCol = Math.floor(mx / tileSize);
+            hoverRow = Math.floor(my / tileSize);
 
-            const x = col * tileSize;
-            const y = row * tileSize;
+            const x = hoverCol * tileSize;
+            const y = hoverRow * tileSize;
 
             this.ctx.strokeStyle = "#ff00ff";
             this.ctx.strokeRect(x, y, tileSize, tileSize);
+        } else {
+            hoverRow = -1;
+            hoverCol = -1;
         }
     }
     drawUI() {
@@ -323,6 +326,13 @@ class Game {
         this.drawText(`Score: ${this.score}`, 20, false, 70, "violet");
         this.drawText(`HP: ${this.player.hp}/${this.player.max_hp}`, 20, false, 100, 'violet')
         this.drawText(`Turns: ${this.turns}`, 20, false, 130, 'violet')
+
+        if (hoverCol > -1 && hoverRow > -1) {
+            let t = this.game_map.tiles[hoverRow][hoverCol];
+            if (t.monster != null) {
+                this.drawText(`${t.monster.name} [${t.monster.hp}/${t.monster.max_hp}]`, 20, false, 160, 'yellow');
+            }
+        }
     }
 
     drawSprite(sprite, x, y, rot = 0) {
