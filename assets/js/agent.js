@@ -62,7 +62,7 @@ class DirectedRandomAgent extends Agent {
     act() {
         if (this.isProcessing) return;
 
-        let next_dir = this.biasDirection(this.game.player.tile.x, this.game.player.tile.y, this.game.stairs_tile.x, this.game.stairs_tile.y, 4);
+        let next_dir = this.biasDirection(this.game.player.tile.x, this.game.player.tile.y, this.game.game_map.stairs_tile.x, this.game.game_map.stairs_tile.y, 4);
         if (next_dir) {
             try {
                 this.isProcessing = true;

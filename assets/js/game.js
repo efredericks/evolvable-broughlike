@@ -184,19 +184,22 @@ class Game {
         // setInterval(() => this.draw(), 15);
     }
     startLevel(hp) {
-        this.spawn_rate = 15;
-        this.spawn_counter = this.spawn_rate;
+        // this.spawn_rate = 15;
+        // this.spawn_counter = this.spawn_rate;
 
         this.game_map = new GameMap(this);
         this.game_map.generateLevel();
+
+        this.game_map.spawn_rate = 15;
+        this.game_map.spawn_counter = this.game_map.spawn_rate;
 
         this.player = new Player(this, this.game_map.randomPassableTile());
         this.player.hp = hp;
         this.player.max_hp = hp;
         console.log(this.player)
 
-        this.stairs_tile = this.game_map.randomPassableTile();
-        this.stairs_tile.replace(StairsDown);
+        this.game_map.stairs_tile = this.game_map.randomPassableTile();
+        this.game_map.stairs_tile.replace(StairsDown);
     }
 
     drawText(text, size, centered, textY, color, _textX = null) {
@@ -264,8 +267,8 @@ class Game {
         this.spawn_counter--;
         if (this.spawn_counter <= 0) {
             this.game_map.spawnMonster();
-            this.spawn_counter = this.spawn_rate;
-            this.spawn_rate--;
+            this.game_map.spawn_counter = this.game_map.spawn_rate;
+            this.game_map.spawn_rate--;
         }
 
 
