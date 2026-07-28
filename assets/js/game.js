@@ -283,8 +283,8 @@ class Game {
         }
 
         // spawn more monsters
-        this.spawn_counter--;
-        if (this.spawn_counter <= 0) {
+        this.getCurrentGameMap().spawn_counter--;
+        if (this.getCurrentGameMap().spawn_counter <= 0) {
             this.getCurrentGameMap().spawnMonster();
             this.getCurrentGameMap().spawn_counter = this.getCurrentGameMap().spawn_rate;
             this.getCurrentGameMap().spawn_rate--;
