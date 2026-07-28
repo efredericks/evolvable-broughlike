@@ -1,4 +1,9 @@
+// overworld
+const GRID_COLS = 5;
+const GRID_ROWS = 3;
+// local grid
 const numTiles = 18;
+
 const uiWidth = 8;
 const tileSize = 32;
 const spritesheetTileSize = 8;
@@ -40,6 +45,8 @@ const SPRITES = {
     tree1: { c: 4, r: 5 },
     tree2: { c: 5, r: 5 },
     river: { c: 15, r: 5 },
+    hriver: { c: 12, r: 6}, 
+    vriver: { c: 13, r: 6}, 
     ladder: { c: 11, r: 5 },
 
     // ui: c, r

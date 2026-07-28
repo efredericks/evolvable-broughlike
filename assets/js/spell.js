@@ -1,14 +1,15 @@
 spells = {
     // teleport to random tile
     TELEPORT: (e) => {
-        e.move(game.game_map.randomPassableTile());
+        e.move(e.getGameMap().randomPassableTile());
+        // e.move(game.game_map.randomPassableTile());
     },
 
     // teleport all monsters to random cell
     TP_OTHERS: (e) => {
-        for (let m of e.game.game_map.monsters) {
+        for (let m of e.getGameMap().monsters) {
             if (m.teleport_counter <= 0) {
-                m.move(game.game_map.randomPassableTile());
+                m.move(e.getGameMap().randomPassableTile());
                 m.teleport_counter = 2;
             }
         }

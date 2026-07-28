@@ -1,8 +1,9 @@
 
 // map things
 class GameMap {
-    constructor(game) {
+    constructor(game, c, r) {
         this.game = game;
+        this.global_position = { c: c, r: r };
         this.tiles = [];
         this.monsters = [];
     }
@@ -29,7 +30,7 @@ class GameMap {
                     let r = sr + _r;
                     let c = sc + _c;
 
-                    // Safely grab the character token
+                    // grab the character token
                     let token = prefab[_r][_c];
 
                     if (token === "t") {
@@ -41,15 +42,44 @@ class GameMap {
             }
         }
 
-        let r = randomRange(1, numTiles-2);
-        let lc = randomRange(1, numTiles-2);
-        for (let c = 0; c < numTiles; c++) {
-            if (lc == c) this.tiles[r][c].replace(Bridge);
-            else this.tiles[r][c].replace(River);
-        }
-        for (let c = 0; c < numTiles; c++) {
-            this.tiles[r-1][c].replace(Floor);
-            this.tiles[r+1][c].replace(Floor);
+        const map_features = ['river', 'lake', null];
+        const sel = shuffle(map_features)[0];
+
+        // lake
+
+        // river
+        let river_random = Math.random();
+        if (river_random > 0.66) { // horizontal
+            let r = randomRange(1, numTiles - 2);
+            let lc = randomRange(1, numTiles - 2);
+            for (let c = 0; c < numTiles; c++) {
+                if (lc == c) this.tiles[r][c].replace(Bridge);
+                else {
+                    this.tiles[r][c].replace(River);
+                    this.tiles[r][c].rot = Math.PI / 2.0;
+                    // this.tiles[r][c].rotate();
+                }
+            }
+            for (let c = 0; c < numTiles; c++) {
+                this.tiles[r - 1][c].replace(Floor);
+                this.tiles[r + 1][c].replace(Floor);
+            }
+        } else if (river_random > 0.33) { // vertical
+            let c = randomRange(1, numTiles - 2);
+            let lr = randomRange(1, numTiles - 2);
+            for (let r = 0; r < numTiles; r++) {
+                if (lr == r) {
+                    this.tiles[r][c].replace(Bridge);
+                    this.tiles[r][c].rot = Math.PI / 2.0;
+                } else {
+                    this.tiles[r][c].replace(River);
+                    this.tiles[r][c].rot = 0.0;
+                }
+            }
+            for (let r = 0; r < numTiles; r++) {
+                this.tiles[r][c - 1].replace(Floor);
+                this.tiles[r][c + 1].replace(Floor);
+            }
         }
 
         // monsters and treasures after all map pcg is done
@@ -69,10 +99,10 @@ class GameMap {
 
                 // let's allow the player to be on the boundary to give a bit more space to play with
                 if (Math.random() < 0.3) {// || !this.inBounds(c, r)) {
-                    this.tiles[r][c] = new Wall(this.game, c, r);
+                    this.tiles[r][c] = new Wall(this.game, c, r, this.global_position);
                 } else {
                     let t = shuffle(WALKABLE_TILES)[0];
-                    this.tiles[r][c] = new t(this.game, c, r);//Floor(this.game, c, r);
+                    this.tiles[r][c] = new t(this.game, c, r, this.global_position);//Floor(this.game, c, r);
                     passableTiles++;
                 }
             }
@@ -88,7 +118,7 @@ class GameMap {
     // get a tile in range
     getTile(c, r) {
         if (this.inBounds(c, r)) return this.tiles[r][c];
-        else return new Wall(this.game, c, r);
+        else return new Wall(this.game, c, r, this.global_position);
     }
 
     // get a randomly walkable tile without a monster already in it

@@ -25,7 +25,7 @@ class DirectedRandomAgent extends Agent {
 
     // bias intensity multiplier
     biasDirection(x, y, destx, desty, biasIntensity = 2) {
-        let tile = this.game.game_map.getTile(x, y);
+        let tile = this.game.getCurrentGameMap().getTile(x, y);
         let valid_neighbors = tile.getAdjacentPassableNeighbors();
 
         if (valid_neighbors.length == 0) return null;
@@ -62,7 +62,7 @@ class DirectedRandomAgent extends Agent {
     act() {
         if (this.isProcessing) return;
 
-        let next_dir = this.biasDirection(this.game.player.tile.x, this.game.player.tile.y, this.game.game_map.stairs_tile.x, this.game.game_map.stairs_tile.y, 4);
+        let next_dir = this.biasDirection(this.game.player.tile.x, this.game.player.tile.y, this.game.getCurrentGameMap().stairs_tile.x, this.game.getCurrentGameMap().stairs_tile.y, 4);
         if (next_dir) {
             try {
                 this.isProcessing = true;

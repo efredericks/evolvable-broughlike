@@ -1,5 +1,5 @@
 class Tile {
-    constructor(game, x, y, sprite, passable) {
+    constructor(game, x, y, sprite, passable, global_position) {
         this.game = game;
         this.x = x;
         this.y = y;
@@ -13,6 +13,9 @@ class Tile {
 
         this.can_burn = false;
         this.rot = 0;
+        this.global_position = global_position;
+
+        this.game_map = this.game.getGameMap(global_position.c, global_position.r);
     }
 
     update() { }
@@ -48,7 +51,7 @@ class Tile {
     replace(newTileType) {
         if (this instanceof StairsDown) return;
 
-        const newTile = new newTileType(this.game, this.x, this.y);
+        const newTile = new newTileType(this.game, this.x, this.y, this.global_position);
         if (this.monster) {
             newTile.monster = this.monster;
             this.monster.tile = newTile;
@@ -56,12 +59,12 @@ class Tile {
         if (this.treasure) {
             newTile.treasure = this.treasure;
         }
-        this.game.game_map.tiles[this.y][this.x] = newTile;
+        this.game_map.tiles[this.y][this.x] = newTile;
         return newTile;
     }
 
     getNeighbor(dx, dy) {
-        return this.game.game_map.getTile(this.x + dx, this.y + dy);
+        return this.game_map.getTile(this.x + dx, this.y + dy);
     }
     getAdjacentNeighbors() {
         return shuffle([
@@ -91,15 +94,15 @@ class Tile {
             if (monster.isPlayer && this.treasure) {
                 this.game.score++;
                 this.treasure = false;
-                this.game.game_map.spawnMonster();
+                this.game_map.spawnMonster();
             }
         }
     }
 }
 
 class Floor extends Tile {
-    constructor(game, x, y) {
-        super(game, x, y, shuffle(FLOOR_TILES)[0], true);
+    constructor(game, x, y, global_position) {
+        super(game, x, y, shuffle(FLOOR_TILES)[0], true, global_position);
     }
 
     // stepOn(monster) {
@@ -111,31 +114,34 @@ class Floor extends Tile {
     // }
 }
 class Wall extends Tile {
-    constructor(game, x, y) {
-        super(game, x, y, SPRITES.wall, false);
+    constructor(game, x, y, global_position) {
+        super(game, x, y, SPRITES.wall, false, global_position);
     }
 }
 class River extends Tile {
-    constructor(game, x, y) {
-        super(game, x, y, SPRITES.river, false);
-        this.rot = Math.PI / 2.0;
+    constructor(game, x, y, global_position, dir) {
+        super(game, x, y, SPRITES.river, false, global_position);
+        this.rot = 0.0;
     }
+    // rotate() {
+    //     this.rot = Math.PI / 2.0;
+    // }
 }
 class Bridge extends Tile {
-    constructor(game, x, y) {
-        super(game, x, y, SPRITES.ladder, true);
+    constructor(game, x, y, global_position) {
+        super(game, x, y, SPRITES.ladder, true, global_position);
         this.rot = 0.0;
     }
 }
 class Tree extends Tile {
-    constructor(game, x, y) {
-        super(game, x, y, shuffle(TREE_TILES)[0], false);
+    constructor(game, x, y, global_position) {
+        super(game, x, y, shuffle(TREE_TILES)[0], false, global_position);
         this.can_burn = true;
     }
 }
 class Grass extends Tile {
-    constructor(game, x, y) {
-        super(game, x, y, SPRITES.grass, true);
+    constructor(game, x, y, global_position) {
+        super(game, x, y, SPRITES.grass, true, global_position);
         this.can_burn = true;
     }
     // stepOn(monster) {
@@ -147,8 +153,8 @@ class Grass extends Tile {
     // }
 }
 class StairsDown extends Tile {
-    constructor(game, x, y) {
-        super(game, x, y, SPRITES.stairs_down, true);
+    constructor(game, x, y, global_position) {
+        super(game, x, y, SPRITES.stairs_down, true, global_position);
     }
 
     stepOn(monster) {
@@ -166,8 +172,8 @@ class StairsDown extends Tile {
 }
 
 class Grave extends Tile {
-    constructor(game, x, y) {
-        super(game, x, y, SPRITES.grave, true);
+    constructor(game, x, y, global_position) {
+        super(game, x, y, SPRITES.grave, true, global_position);
         this.hp = SPRITES.grave?.hp ?? 1;
     }
 
@@ -179,8 +185,8 @@ class Grave extends Tile {
     }
 }
 class Fire extends Tile {
-    constructor(game, x, y) {
-        super(game, x, y, SPRITES.fire, true);
+    constructor(game, x, y, global_position) {
+        super(game, x, y, SPRITES.fire, true, global_position);
         this.hp = SPRITES.fire?.hp ?? 1;
     }
 

@@ -12,7 +12,7 @@ class Monster {
         this.max_hp = sprite?.hp ?? -1;
 
         this.name = sprite?.name ?? "MISSING";
-        
+
         this.dead = false;
         this.stunned = false; // can't move
         this.teleport_counter = 2;
@@ -23,6 +23,12 @@ class Monster {
 
         this.isPlayer = false;
         this.opcodes = [];
+
+        this.global_position = tile.global_position;
+    }
+
+    getGameMap() {
+        return this.game.getGameMap(this.global_position.c, this.global_position.r);
     }
 
     draw() {
@@ -77,12 +83,13 @@ class Monster {
 
         // original from tutorial - heart drawing
         // for (let i = 0; i < this.hp; i++) {
-        //     this.game.drawSprite(SPRITES.heart, this.tile.x + (i % 3) * (5 / 16), this.tile.y - Math.floor(i/3) * (5/16));
+        //     this.game.drawSprite(SPRITES.heart, this.tile.x + (di % 3) * (5 / 16), this.tile.y - Math.floor(i/3) * (5/16));
         // }
     }
 
     tryMove(dx, dy) {
         let newTile = this.tile.getNeighbor(dx, dy);
+        // console.log(newTile)
         if (newTile.passable) {
             this.lastMove = [dx, dy];
             if (!newTile.monster) {
@@ -98,6 +105,31 @@ class Monster {
                 }
             }
             return true;
+        } else {
+            // wrap to next grid position
+            // right
+            if (newTile.x > numTiles - 1 && this.isPlayer && this.global_position.c < GRID_COLS-1) {
+                this.global_position.c++;
+                let moveTile = this.getGameMap().getTile(0, this.tile.y);
+                this.move(moveTile);
+                // left
+            } else if (newTile.x < 0 && this.isPlayer && this.global_position.c > 0) {
+                this.global_position.c--;
+                let moveTile = this.getGameMap().getTile(numTiles - 1, this.tile.y);
+                this.move(moveTile);
+            } 
+
+            // up
+            if (newTile.y > numTiles - 1 && this.isPlayer && this.global_position.r < GRID_ROWS-1) {
+                this.global_position.r++;
+                let moveTile = this.getGameMap().getTile(this.tile.x, 0);
+                this.move(moveTile);
+                // down
+            } else if (newTile.y < 0 && this.isPlayer && this.global_position.r > 0) {
+                this.global_position.r--;
+                let moveTile = this.getGameMap().getTile(this.tile.x, numTiles - 1);
+                this.move(moveTile);
+            } 
         }
     }
 
