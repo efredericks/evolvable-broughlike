@@ -108,28 +108,28 @@ class Monster {
         } else {
             // wrap to next grid position
             // right
-            if (newTile.x > numTiles - 1 && this.isPlayer && this.global_position.c < GRID_COLS-1) {
+            if (newTile.x > numTiles - 1 && this.isPlayer && this.global_position.c < GRID_COLS - 1) {
                 this.global_position.c++;
                 let moveTile = this.getGameMap().getTile(0, this.tile.y);
-                this.move(moveTile);
+                this.move(moveTile, true);
                 // left
             } else if (newTile.x < 0 && this.isPlayer && this.global_position.c > 0) {
                 this.global_position.c--;
                 let moveTile = this.getGameMap().getTile(numTiles - 1, this.tile.y);
-                this.move(moveTile);
-            } 
+                this.move(moveTile, true);
+            }
 
             // up
-            if (newTile.y > numTiles - 1 && this.isPlayer && this.global_position.r < GRID_ROWS-1) {
+            if (newTile.y > numTiles - 1 && this.isPlayer && this.global_position.r < GRID_ROWS - 1) {
                 this.global_position.r++;
                 let moveTile = this.getGameMap().getTile(this.tile.x, 0);
-                this.move(moveTile);
+                this.move(moveTile, true);
                 // down
             } else if (newTile.y < 0 && this.isPlayer && this.global_position.r > 0) {
                 this.global_position.r--;
                 let moveTile = this.getGameMap().getTile(this.tile.x, numTiles - 1);
-                this.move(moveTile);
-            } 
+                this.move(moveTile, true);
+            }
         }
     }
 
@@ -165,12 +165,19 @@ class Monster {
         return this.tile.y + this.offsetY;
     }
 
-    move(tile) {
+    move(tile, tp = false) {
         if (this.tile) {
             this.tile.monster = null;
 
-            this.offsetX = this.tile.x - tile.x;
-            this.offsetY = this.tile.y - tile.y;
+            if (tp) {
+                this.offsetX = 0;
+                this.offsetY = 0;
+                // this.offsetX = (tile.x - this.tile.x) / 2;
+                // this.offsetY = (tile.y - this.tile.y) / 2;
+            } else {
+                this.offsetX = this.tile.x - tile.x;
+                this.offsetY = this.tile.y - tile.y;
+            }
         }
         this.tile = tile;
         tile.monster = this;
