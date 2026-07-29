@@ -42,6 +42,24 @@ function rightPad(textArray) {
     return finalText;
 }
 
+// local to world
+function worldToChunk(worldCol, worldRow) {
+    const cc = Math.floor(worldCol / numTiles);
+    const cr = Math.floor(worldRow / numTiles);
+
+    // mod for negative coords
+    const lc = ((worldCol % numTiles) + numTiles) % numTiles;
+    const lr = ((worldRow % numTiles) + numTiles) % numTiles;
+
+    return { chunk_col: cc, chunk_row: cr, local_col: lc, local_row: lr };
+}
+// world to local
+function chunkToWorld(chunk_col, chunk_row, local_col, local_row) {
+    const wc = chunk_col * numTiles + local_col;
+    const wr = chunk_row * numTiles + local_row;
+    return { world_col: wc, world_row: wr };
+}
+
 // transform mouse coords to allow mouseover of entities
 // based on https://jsfiddle.net/mattdeeds/yqLvza57/37/
 function getCanvasCoords(ctx, screenX, screenY) {

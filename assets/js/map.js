@@ -7,6 +7,46 @@ class GameMap {
         this.tiles = [];
         this.monsters = [];
     }
+
+    // generate level from world
+    generateLevelFromWorld(wc, wr) {
+        this.tiles = [];
+        for (let r = 0; r < numTiles; r++) {
+            this.tiles[r] = [];
+            for (let c = 0; c < numTiles; c++) {
+                const zoom = 0.01;
+                const world_pos = chunkToWorld(wc, wr, c, r);
+
+                const n = noise.simplex2(world_pos.world_col * zoom, world_pos.world_row * zoom);
+
+                if (n < -0.85 || n > 0.85) {
+                    this.tiles[r][c] = new Wall(this.game, c, r, this.global_position);
+                } else if (n < -0.5 || n > 0.5) {
+                    let t = shuffle(WALKABLE_TILES)[0];
+                    this.tiles[r][c] = new t(this.game, c, r, this.global_position);//Floor(this.game, c, r);
+                } else if (n < -0.25 || n > 0.25) {
+                    this.tiles[r][c] = new Tree(this.game, c, r, this.global_position);
+                } else {
+                    let t = shuffle(WALKABLE_TILES)[0];
+                    this.tiles[r][c] = new t(this.game, c, r, this.global_position);//Floor(this.game, c, r);
+
+                }
+
+
+                // console.log(`${world_pos.world_col}, ${world_pos.world_row}`)
+
+                // if (world_pos.world_row < 40) {
+                // let t = shuffle(WALKABLE_TILES)[0];
+                // this.tiles[r][c] = new t(this.game, c, r, this.global_position);//Floor(this.game, c, r);
+                // } else {
+                //     this.tiles[r][c] = new Wall(this.game, c, r, this.global_position);
+
+                // }
+            }
+        }
+    }
+
+
     generateLevel() {
         // this.generateTiles();
         tryTo('generate connected map', () => {

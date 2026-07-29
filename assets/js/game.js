@@ -20,6 +20,8 @@ class Game {
         this.canvas.style.width = 'auto';
         this.canvas.style.height = 'auto';
 
+        // noise.seed(Math.random());
+
         // this.canvas.style.width = this.canvas.width + 'px';
         // this.canvas.style.height = this.canvas.height + 'px';
 
@@ -189,6 +191,7 @@ class Game {
         // setInterval(() => this.draw(), 15);
     }
     startLevel(hp) {
+        noise.seed(Math.random());
         // this.spawn_rate = 15;
         // this.spawn_counter = this.spawn_rate;
 
@@ -197,7 +200,7 @@ class Game {
             this.game_maps[r] = [];
             for (let c = 0; c < GRID_COLS; c++) {
                 this.game_maps[r][c] = new GameMap(this, c, r);
-                this.game_maps[r][c].generateLevel();
+                this.game_maps[r][c].generateLevelFromWorld(c, r);
 
                 this.game_maps[r][c].spawn_rate = 15;
                 this.game_maps[r][c].spawn_counter = this.game_maps[r][c].spawn_rate;
