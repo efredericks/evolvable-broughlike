@@ -201,11 +201,12 @@ class Game {
 
                 this.game_maps[r][c].spawn_rate = 15;
                 this.game_maps[r][c].spawn_counter = this.game_maps[r][c].spawn_rate;
-
-                this.game_maps[r][c].stairs_tile = this.game_maps[r][c].randomPassableTile();
-                this.game_maps[r][c].stairs_tile.replace(StairsDown);
             }
         }
+
+        // staircase in last corner
+        this.game_maps[GRID_ROWS-1][GRID_COLS-1].stairs_tile = this.game_maps[GRID_ROWS-1][GRID_COLS-1].randomPassableTile();
+        this.game_maps[GRID_ROWS-1][GRID_COLS-1].stairs_tile.replace(StairsDown);
 
         this.player = new Player(this, this.game_maps[0][0].randomPassableTile());
         this.player.hp = hp;
@@ -311,6 +312,34 @@ class Game {
                     this.getCurrentGameMap().getTile(c, r).draw();
                 }
             }
+            // lines to show allowable movement
+            this.ctx.strokeStyle = 'rgba(0, 254, 144, 0.82)';
+            this.ctx.lineWidth = 3;
+
+            if (this.player.global_position.c > 0) {
+                this.ctx.beginPath();
+                this.ctx.moveTo(0, 0);
+                this.ctx.lineTo(0, this.canvas.height);
+                this.ctx.stroke();
+            }
+            if (this.player.global_position.c < GRID_COLS - 1) {
+                this.ctx.beginPath();
+                this.ctx.moveTo(this.canvas.width - uiWidth * tileSize, 0);
+                this.ctx.lineTo(this.canvas.width - uiWidth * tileSize, this.canvas.height);
+                this.ctx.stroke();
+            }
+            if (this.player.global_position.r > 0) {
+                this.ctx.beginPath();
+                this.ctx.moveTo(0, 0);
+                this.ctx.lineTo(this.canvas.width - uiWidth * tileSize, 0);
+                this.ctx.stroke();
+            }
+            if (this.player.global_position.r < GRID_ROWS - 1) {
+                this.ctx.beginPath();
+                this.ctx.moveTo(0, this.canvas.height);
+                this.ctx.lineTo(this.canvas.width - uiWidth * tileSize, this.canvas.height);
+                this.ctx.stroke();
+            }
 
             // draw on top of gravestones
             let sorted_monsters = this.getCurrentGameMap().monsters.sort((a, b) => b.dead - a.dead);
@@ -386,7 +415,7 @@ class Game {
                 const sprite_off = box_w * 0.1;
 
                 if (this.player.global_position.c == c && this.player.global_position.r == r) {
-                    this.drawDirectSprite(SPRITES.player, x+sprite_off, y+sprite_off, sprite_w);
+                    this.drawDirectSprite(SPRITES.player, x + sprite_off, y + sprite_off, sprite_w);
                 }
                 x += box_w + gap;
             }
