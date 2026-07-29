@@ -1,0 +1,3 @@
+[submodule "assets/js/libs/noisejs"]
+	path = assets/js/libs/noisejs
+	url = https://github.com/josephg/noisejs
