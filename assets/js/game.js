@@ -171,6 +171,7 @@ class Game {
         this.state = STATES.title;
 
         this.drawText("evolvable broughlike", 40, true, this.canvas.height / 3, "white");
+        this.drawText("press any key", 20, true, this.canvas.height / 3 + 30, "white");
 
         this.drawScores();
 
