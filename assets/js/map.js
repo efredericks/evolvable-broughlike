@@ -17,19 +17,23 @@ class GameMap {
                 const zoom = 0.01;
                 const world_pos = chunkToWorld(wc, wr, c, r);
 
-                const n = noise.simplex2(world_pos.world_col * zoom, world_pos.world_row * zoom);
-
-                if (n < -0.85 || n > 0.85) {
-                    this.tiles[r][c] = new Wall(this.game, c, r, this.global_position);
-                } else if (n < -0.5 || n > 0.5) {
+                // temporarily give a 'border' around the world to avoid softlocking (doesn't help with walls)
+                if (r == 0 || c == 0 || r == numTiles - 1 || c == numTiles - 1) {
                     let t = shuffle(WALKABLE_TILES)[0];
                     this.tiles[r][c] = new t(this.game, c, r, this.global_position);//Floor(this.game, c, r);
-                } else if (n < -0.25 || n > 0.25) {
-                    this.tiles[r][c] = new Tree(this.game, c, r, this.global_position);
                 } else {
-                    let t = shuffle(WALKABLE_TILES)[0];
-                    this.tiles[r][c] = new t(this.game, c, r, this.global_position);//Floor(this.game, c, r);
-
+                    const n = noise.simplex2(world_pos.world_col * zoom, world_pos.world_row * zoom);
+                    if (n < -0.85 || n > 0.85) {
+                        this.tiles[r][c] = new Wall(this.game, c, r, this.global_position);
+                    } else if (n < -0.5 || n > 0.5) {
+                        let t = shuffle(WALKABLE_TILES)[0];
+                        this.tiles[r][c] = new t(this.game, c, r, this.global_position);//Floor(this.game, c, r);
+                    } else if (n < -0.25 || n > 0.25) {
+                        this.tiles[r][c] = new Tree(this.game, c, r, this.global_position);
+                    } else {
+                        let t = shuffle(WALKABLE_TILES)[0];
+                        this.tiles[r][c] = new t(this.game, c, r, this.global_position);//Floor(this.game, c, r);
+                    }
                 }
 
 
