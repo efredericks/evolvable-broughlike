@@ -16,7 +16,7 @@ const FIRE_SPREAD = 0.5;
 
 const SPRITES = {
     // moveable entities: c, r, hp
-    player: { c: 13, r: 0, hp: 89995, name: "Player" },
+    player: { c: 13, r: 0, hp: 5, name: "Player" },
     snake: { c: 4, r: 1, hp: 1, name: "Snake" },
     dog: { c: 5, r: 1, hp: 3, name: "Dog" },
     rat: { c: 6, r: 1, hp: 2, name: "Rat" },

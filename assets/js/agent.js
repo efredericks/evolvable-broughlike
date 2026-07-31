@@ -6,6 +6,22 @@ class Agent {
     act() { }
 }
 
+// behavior tree-based agent
+class BehaviorTreeAgent extends Agent {
+    constructor(game) { 
+        super(game); 
+        this.tree = null;
+    }
+
+    setTree(tree) {
+        this.tree = tree;
+    }
+
+    act() {
+        ;
+    }
+}
+
 // move randomly
 class RandomAgent extends Agent {
     constructor(game) { super(game); }

@@ -43,8 +43,13 @@ class Game {
 
         // input handling
         document.querySelector("html").onkeypress = (e) => {
-            if (this.state == STATES.title) this.startGame();
-            else if (this.state == STATES.dead) this.showTitle();
+            if (this.state == STATES.title) {
+                if (e.key == "C") {
+                    this.clearScores();
+                    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                    this.showTitle();
+                } else this.startGame();
+            } else if (this.state == STATES.dead) this.showTitle();
             else if (this.state == STATES.running) {
                 if (e.key == "w") this.player.tryMove(0, -1);
                 if (e.key == "s") this.player.tryMove(0, 1);
@@ -81,7 +86,8 @@ class Game {
         // agent things
         this.autoplay = false;
         this.interval_speed = 15; // 150
-        this.agent = new DirectedRandomAgent(this);
+        this.agent = new RandomAgent(this);
+        // this.agent = new DirectedRandomAgent(this);
 
         // this.nn = new NeuralNetwork([2,3,3,3,4,3,2], [relu, sigmoid]);
         // console.log(this.nn.forward([1,0]))
@@ -171,12 +177,18 @@ class Game {
         this.state = STATES.title;
 
         this.drawText("evolvable broughlike", 40, true, this.canvas.height / 3, "white");
-        this.drawText("press any key", 20, true, this.canvas.height / 3 + 30, "white");
+        this.drawText("press any key ([C] to clear scores)", 20, true, this.canvas.height / 3 + 30, "white");
 
         this.drawScores();
 
         if (AVAILABLE_MONSTERS.length < numLevels) {
             throw "AVAILABLE MONSTERS too short";
+        }
+    }
+
+    clearScores() {
+        if (localStorage[local_storage_name]) {
+            localStorage.removeItem(local_storage_name);
         }
     }
 
@@ -209,8 +221,8 @@ class Game {
         }
 
         // staircase in last corner
-        this.game_maps[GRID_ROWS-1][GRID_COLS-1].stairs_tile = this.game_maps[GRID_ROWS-1][GRID_COLS-1].randomPassableTile();
-        this.game_maps[GRID_ROWS-1][GRID_COLS-1].stairs_tile.replace(StairsDown);
+        this.game_maps[GRID_ROWS - 1][GRID_COLS - 1].stairs_tile = this.game_maps[GRID_ROWS - 1][GRID_COLS - 1].randomPassableTile();
+        this.game_maps[GRID_ROWS - 1][GRID_COLS - 1].stairs_tile.replace(StairsDown);
 
         this.player = new Player(this, this.game_maps[0][0].randomPassableTile());
         this.player.hp = hp;
