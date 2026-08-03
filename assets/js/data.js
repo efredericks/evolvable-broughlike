@@ -16,18 +16,18 @@ const FIRE_SPREAD = 0.5;
 
 const SPRITES = {
     // moveable entities: c, r, hp
-    player: { c: 13, r: 0, hp: 5000000, name: "Player" },
-    snake: { c: 4, r: 1, hp: 1, name: "Snake" },
-    dog: { c: 5, r: 1, hp: 3, name: "Dog" },
-    rat: { c: 6, r: 1, hp: 2, name: "Rat" },
-    tick: { c: 7, r: 1, hp: 5, name: "Tick" },
-    blob: { c: 8, r: 1, hp: 4, name: "Blob" },
-    ghost: { c: 9, r: 1, hp: 6, name: "Ghost" },
-    turtle: { c: 10, r: 1, hp: 8, name: "Turtle" },
-    octopode: { c: 11, r: 1, hp: 2, name: "Octopode" },
-    mushroom: { c: 12, r: 1, hp: 4, name: "Mushroom" },
-    fire: { c: 8, r: 8, hp: 5, name: "Fire" },
-    trap: { c: 1, r: 8, hp: 3, name: "Trap" },
+    player: { c: 13, r: 0, hp: 5, name: "Player", mana: 6 },
+    snake: { c: 4, r: 1, hp: 1, name: "Snake", mana: 6 },
+    dog: { c: 5, r: 1, hp: 3, name: "Dog", mana: 6 },
+    rat: { c: 6, r: 1, hp: 2, name: "Rat", mana: 6 },
+    tick: { c: 7, r: 1, hp: 5, name: "Tick", mana: 6 },
+    blob: { c: 8, r: 1, hp: 4, name: "Blob", mana: 6 },
+    ghost: { c: 9, r: 1, hp: 6, name: "Ghost", mana: 6 },
+    turtle: { c: 10, r: 1, hp: 8, name: "Turtle", mana: 6 },
+    octopode: { c: 11, r: 1, hp: 2, name: "Octopode", mana: 6 },
+    mushroom: { c: 12, r: 1, hp: 4, name: "Mushroom", mana: 6 },
+    fire: { c: 8, r: 8, hp: 5, name: "Fire", mana: 6 },
+    trap: { c: 1, r: 8, hp: 3, name: "Trap", mana: 6 },
 
     // env:, c, r
     wall: { c: 2, r: 1 },
@@ -45,8 +45,8 @@ const SPRITES = {
     tree1: { c: 4, r: 5 },
     tree2: { c: 5, r: 5 },
     river: { c: 15, r: 5 },
-    hriver: { c: 12, r: 6}, 
-    vriver: { c: 13, r: 6}, 
+    hriver: { c: 12, r: 6 },
+    vriver: { c: 13, r: 6 },
     ladder: { c: 11, r: 5 },
 
     // ui: c, r
@@ -59,6 +59,17 @@ const TREE_TILES = [SPRITES.tree1, SPRITES.tree2];
 const DIRS = [
     [-1, 0], [0, -1], [1, 0], [0, 1], [0, 0]
 ];
+
+// mana cost per spell
+const SPELL_COST = {
+    TELEPORT: 2,
+    TP_OTHERS: 4,
+    AURA: 5,
+    QUAKE: 5,
+    BOLT: 2,
+    CROSS: 2,
+    EX: 2,
+}
 
 const AIType = {
     random: 0,

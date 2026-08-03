@@ -392,13 +392,14 @@ class Game {
         this.drawText(`Level: ${this.level}/${numLevels}`, 20, false, 40, "violet");
         this.drawText(`Score: ${this.score}`, 20, false, 70, "violet");
         this.drawText(`HP: ${this.player.hp}/${this.player.max_hp}`, 20, false, 100, 'violet')
-        this.drawText(`Turns: ${this.turns}`, 20, false, 130, 'violet')
-        this.drawText(`Position: c:${this.player.global_position.c} r:${this.player.global_position.r}`, 20, false, 160, 'violet')
+        this.drawText(`MP: ${this.player.mana}/${this.player.max_mana}`, 20, false, 130, 'violet')
+        this.drawText(`Turns: ${this.turns}`, 20, false, 160, 'violet')
+        this.drawText(`Position: c:${this.player.global_position.c} r:${this.player.global_position.r}`, 20, false, 190, 'violet')
 
         if (hoverCol > -1 && hoverRow > -1) {
             let t = this.getCurrentGameMap().tiles[hoverRow][hoverCol];
             if (t.monster != null) {
-                this.drawText(`${t.monster.name} [${t.monster.hp}/${t.monster.max_hp}]`, 20, false, 190, 'yellow');
+                this.drawText(`${t.monster.name} [${t.monster.hp}/${t.monster.max_hp}]`, 20, false, 210, 'yellow');
             }
         }
 

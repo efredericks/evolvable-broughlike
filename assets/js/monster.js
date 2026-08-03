@@ -11,6 +11,9 @@ class Monster {
         this.hp = sprite?.hp ?? -1;
         this.max_hp = sprite?.hp ?? -1;
 
+        this.mana = sprite?.mana ?? -1;
+        this.max_mana = sprite?.mana ?? -1;
+
         this.name = sprite?.name ?? "MISSING";
 
         this.dead = false;
@@ -25,6 +28,19 @@ class Monster {
         this.opcodes = [];
 
         this.global_position = tile.global_position;
+    }
+
+    checkCast(spell_name) {
+        const mana_cost = SPELL_COST[spell_name] ?? 0;
+        if (this.mana >= mana_cost) {
+            this.healMP(-mana_cost)
+            return true;
+        } else {
+            if (this.isPlayer) {
+                this.game.shakeAmount = 5;
+            }
+            return false;
+        }
     }
 
     getGameMap() {
@@ -51,11 +67,11 @@ class Monster {
 
     drawHP() {
         // background
+        const h = tileSize * 0.15;
         const x = this.getDisplayX() * tileSize;
-        const y = this.getDisplayY() * tileSize - tileSize * 0.15;
+        const y = this.getDisplayY() * tileSize - 2 * h;//tileSize * 0.15;
         // const x = this.tile.x * tileSize;
         // const y = this.tile.y * tileSize - tileSize * 0.15;
-        const h = tileSize * 0.15;
 
         this.game.ctx.fillStyle = "#ff000033";
         this.game.ctx.fillRect(x, y, tileSize, h);
@@ -64,21 +80,31 @@ class Monster {
         const padding = 2;
 
         // clamp percentage of health
-        let perc = Math.max(0, Math.min(1, this.hp / this.max_hp));
+        let hp_perc = Math.max(0, Math.min(1, this.hp / this.max_hp));
+        let mp_perc = Math.max(0, Math.min(1, this.mana / this.max_mana));
 
         // inner size
         const maxInnerWidth = tileSize - (padding * 2);
         const innerHeight = h - (padding * 2);
 
         // scaling and offsetting
-        const w2 = maxInnerWidth * perc;
+        const w2 = maxInnerWidth * hp_perc;
+        const mana_w2 = maxInnerWidth * mp_perc;
         const x2 = x + padding;
-        const y2 = y + padding;
+        let y2 = y + padding;
 
         // green
         if (w2 > 0) {
-            this.game.ctx.fillStyle = "#00ff0099";
+            this.game.ctx.fillStyle = "#00ff00";
             this.game.ctx.fillRect(x2, y2, w2, innerHeight);
+        }
+
+        y2 += h;
+        this.game.ctx.fillStyle = "#ff000033";
+        this.game.ctx.fillRect(x, y, tileSize, h);
+        if (w2 > 0) {
+            this.game.ctx.fillStyle = "#00d9ff";
+            this.game.ctx.fillRect(x2, y2, mana_w2, innerHeight);
         }
 
         // original from tutorial - heart drawing
@@ -133,9 +159,17 @@ class Monster {
         }
     }
 
+    healMP(amt) {
+        if (!this.dead) {
+            this.mana += amt;
+            this.mana = Math.max(0, Math.min(this.max_mana, this.mana));
+        }
+    }
     heal(dmg) {
-        this.hp += dmg;
-        if (this.hp > this.max_hp) this.hp = this.max_hp;
+        if (!this.dead) {
+            this.hp += dmg;
+            this.hp = Math.max(0, Math.min(this.max_hp, this.hp));
+        }
     }
 
     hit(dmg) {
@@ -321,7 +355,10 @@ class Player extends Monster {
         if (super.tryMove(dx, dy)) {
             this.game.tick();
 
-            if (dx == 0 && dy == 0) super.heal(0.5);
+            if (dx == 0 && dy == 0) {
+                super.heal(0.5);
+                super.healMP(0.5);
+            }
         }
     }
 }
