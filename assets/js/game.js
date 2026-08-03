@@ -86,8 +86,8 @@ class Game {
         // agent things
         this.autoplay = false;
         this.interval_speed = 15; // 150
-        this.agent = new RandomAgent(this);
-        // this.agent = new DirectedRandomAgent(this);
+        // this.agent = new RandomAgent(this);
+        this.agent = new DirectedRandomAgent(this);
 
         // this.nn = new NeuralNetwork([2,3,3,3,4,3,2], [relu, sigmoid]);
         // console.log(this.nn.forward([1,0]))
