@@ -91,7 +91,10 @@ function boltTravel(e, direction, effect, dmg, along_path = false) {
                 if (cell.passable) {
                     const tile = game_map.getTile(cell.c, cell.r);
                     if (tile.monster) tile.monster.hit(dmg);
-                    tile.setEffect(effect);
+
+                    if (tile.passable)
+                        tile.setEffect(effect);
+
                     if (tile.can_burn) tile.replace(Fire);
 
                     let neighbors = tile.getAdjacentNeighbors();

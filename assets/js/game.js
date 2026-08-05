@@ -28,7 +28,7 @@ class Game {
         this.ctx.imageSmoothingEnabled = false;
 
         this.spritesheet = new Image();
-        this.spritesheet.src = "assets/sprites/kenney_micro-roguelike//Tilemap/colored_tilemap_packed.png";
+        this.spritesheet.src = "assets/sprites/kenney_micro-roguelike//Tilemap/colored_tilemap_packed_mod.png";
 
         this.state = STATES.loading;
 

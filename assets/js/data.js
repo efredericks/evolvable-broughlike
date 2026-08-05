@@ -29,6 +29,10 @@ const SPRITES = {
     fire: { c: 8, r: 8, hp: 5, name: "Fire", mana: 6 },
     trap: { c: 1, r: 8, hp: 3, name: "Trap", mana: 6 },
 
+    // items
+    hp_potion: {c: 7, r: 8, name: "Health potion", amt: 2},
+    mp_potion: {c: 0, r: 10, name: "Mana potion", amt: 2},
+
     // env:, c, r
     wall: { c: 2, r: 1 },
     floor1: { c: 4, r: 4 },

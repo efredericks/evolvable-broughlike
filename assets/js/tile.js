@@ -7,6 +7,7 @@ class Tile {
         this.passable = passable;
         this.monster = null;
         this.treasure = null;
+        this.item = null;
 
         this.effect = null;
         this.effect_counter = 0;
@@ -25,6 +26,10 @@ class Tile {
 
         if (this.treasure) {
             this.game.drawSprite(SPRITES.ring, this.x, this.y);
+        }
+
+        if (this.item) {
+            this.game.drawSprite(this.item, this.x, this.y);
         }
 
         if (this.effect_counter > 0) {
@@ -56,9 +61,9 @@ class Tile {
             newTile.monster = this.monster;
             this.monster.tile = newTile;
         }
-        if (this.treasure) {
-            newTile.treasure = this.treasure;
-        }
+        if (this.treasure) newTile.treasure = this.treasure;
+        if (this.item) newTile.item = this.item;
+
         this.game_map.tiles[this.y][this.x] = newTile;
         return newTile;
     }
@@ -91,10 +96,30 @@ class Tile {
 
     stepOn(monster) {
         if (this.passable) {
-            if (monster.isPlayer && this.treasure) {
-                this.game.score++;
-                this.treasure = false;
-                this.game_map.spawnMonster();
+            if (monster.isPlayer) {
+                if (this.treasure) {
+                    this.game.score++;
+                    this.treasure = false;
+                    this.game_map.spawnMonster();
+                }
+
+                if (this.item) {
+                    let remove_item = false;
+                    if (this.item == SPRITES.hp_potion) {
+                        if (monster.hp < monster.max_hp) {
+                            monster.heal(SPRITES.hp_potion?.amt ?? 1);
+                            remove_item = true;
+                        }
+                    } else if (this.item == SPRITES.mp_potion) {
+                        if (monster.mana < monster.max_mana) {
+                            monster.healMP(SPRITES.mp_potion?.amt ?? 1);
+                            remove_item = true;
+                        }
+                    }
+
+                    if (remove_item)
+                        this.item = false;
+                }
             }
         }
     }

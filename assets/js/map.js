@@ -34,6 +34,11 @@ class GameMap {
                         let t = shuffle(WALKABLE_TILES)[0];
                         this.tiles[r][c] = new t(this.game, c, r, this.global_position);//Floor(this.game, c, r);
                     }
+
+                    if (Math.random() > 0.9) {
+                        if (this.tiles[r][c].passable)
+                            this.tiles[r][c].item = shuffle([SPRITES.hp_potion, SPRITES.mp_potion])[0];
+                    }
                 }
 
 
