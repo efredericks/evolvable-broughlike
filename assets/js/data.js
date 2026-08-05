@@ -80,3 +80,4 @@ let mouseX = 0;
 let mouseY = 0;
 let hoverRow = -1;
 let hoverCol = -1;
+let mouseCells = [];

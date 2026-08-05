@@ -66,6 +66,7 @@ class Game {
                 if (e.key == "5") spells.BOLT(this.player);
                 if (e.key == "6") spells.CROSS(this.player);
                 if (e.key == "7") spells.EX(this.player);
+                if (e.key == "8") spells.BOLT(this.player, true);
 
                 // agent
                 if (e.key == "p") this.autoplay = !this.autoplay;
@@ -370,6 +371,74 @@ class Game {
             this.drawMouse();
         }
     }
+    // orthogonal/supercover line c/o redblob: https://www.redblobgames.com/grids/line-drawing/
+    drawLineToMouse(targetCol, targetRow) {
+        const game_map = this.getCurrentGameMap();
+
+        // calculate direction from player to target
+        const dx = targetCol - this.player.tile.x;
+        const dy = targetRow - this.player.tile.y;
+
+        const nx = Math.abs(dx);
+        const ny = Math.abs(dy);
+
+        const sign_x = dx > 0 ? 1 : (dx < 0 ? -1 : 0);
+        const sign_y = dy > 0 ? 1 : (dy < 0 ? -1 : 0);
+
+        let current_x = this.player.tile.x;
+        let current_y = this.player.tile.y;
+
+        let cells_along_line = [{
+            c: current_x,
+            r: current_y,
+            x: current_x * tileSize,
+            y: current_y * tileSize
+        }];
+
+        for (let ix = 0, iy = 0; ix < nx || iy < ny;) {
+            const decision = (1 + 2 * ix) * ny - (1 + 2 * iy) * nx;
+
+            // safely get tile
+            const tile = game_map.tiles[current_y]?.[current_x];
+
+            // check in bounds or hitting wall
+            if (!tile || !tile.passable) {
+                cells_along_line.push({
+                    c: current_x,
+                    r: current_y,
+                    x: current_x * tileSize,
+                    y: current_y * tileSize,
+                    passable: false,
+                });
+                break;
+            }
+
+            //// too many cells being drawn in supercover - just using orthogonal
+            // if (decision === 0) { // next step diagonal
+            //     current_x += sign_x;
+            //     current_y += sign_y;
+            //     ix++;
+            //     iy++;
+            // } else 
+            if (decision < 0) { // next step horizontal
+                current_x += sign_x;
+                ix++;
+            } else { // next step vertical
+                current_y += sign_y;
+                iy++;
+            }
+
+            cells_along_line.push({
+                c: current_x,
+                r: current_y,
+                x: current_x * tileSize,
+                y: current_y * tileSize,
+                passable: true,
+            });
+        }
+
+        return cells_along_line;
+    }
     drawMouse() {
         const ht = tileSize / 2;
         let [mx, my] = getCanvasCoords(this.ctx, mouseX, mouseY);
@@ -381,11 +450,23 @@ class Game {
             const x = hoverCol * tileSize;
             const y = hoverRow * tileSize;
 
+            // const cells_to_draw = this.drawLineToMouse(hoverCol, hoverRow);
+            mouseCells = this.drawLineToMouse(hoverCol, hoverRow);
+            for (let cell of mouseCells) {
+                if (cell.passable) {
+                    this.ctx.strokeStyle = "#00c8ff";
+                } else {
+                    this.ctx.strokeStyle = "#ff9500";
+                }
+                this.ctx.strokeRect(cell.x, cell.y, tileSize, tileSize);
+            }
+
             this.ctx.strokeStyle = "#ff00ff";
             this.ctx.strokeRect(x, y, tileSize, tileSize);
         } else {
             hoverRow = -1;
             hoverCol = -1;
+            mouseCells = [];
         }
     }
     drawUI() {
@@ -396,7 +477,7 @@ class Game {
         this.drawText(`Turns: ${this.turns}`, 20, false, 160, 'violet')
         this.drawText(`Position: c:${this.player.global_position.c} r:${this.player.global_position.r}`, 20, false, 190, 'violet')
 
-        if (hoverCol > -1 && hoverRow > -1) {
+        if (hoverCol >= 0 && hoverRow >= 0 && hoverCol <= numTiles - 1 && hoverRow <= numTiles - 1) {
             let t = this.getCurrentGameMap().tiles[hoverRow][hoverCol];
             if (t.monster != null) {
                 this.drawText(`${t.monster.name} [${t.monster.hp}/${t.monster.max_hp}]`, 20, false, 210, 'yellow');

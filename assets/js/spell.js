@@ -53,9 +53,9 @@ spells = {
     },
 
     // send bolt along path
-    BOLT: (e) => {
+    BOLT: (e, along_path = false) => {
         if (e.checkCast('BOLT')) {
-            boltTravel(e, e.lastMove, SPRITES.fire, 15 + Math.abs(e.lastMove[1]));
+            boltTravel(e, e.lastMove, SPRITES.fire, 15 + Math.abs(e.lastMove[1]), along_path);
         }
     },
     CROSS: (e) => {
@@ -77,34 +77,55 @@ spells = {
 }
 
 // send a bolt along a path from entity e
-function boltTravel(e, direction, effect, dmg) {
+function boltTravel(e, direction, effect, dmg, along_path = false) {
     let newTile = e.tile;
     let timeout = 1000;
 
     while (timeout > 0) {
         timeout--;
-        let testTile = newTile.getNeighbor(direction[0], direction[1]);
-        if (testTile.passable) {
-            newTile = testTile;
-            if (newTile.monster) {
-                newTile.monster.hit(dmg);
-            }
-            newTile.setEffect(effect);
 
-            let neighbors = newTile.getAdjacentNeighbors();
-            for (let n of neighbors) {
-                if (n.can_burn && Math.random() > FIRE_SPREAD) {
-                    n.replace(Fire);
+        // fire along mouse path
+        if (along_path) {
+            let game_map = e.getGameMap();
+            for (let cell of mouseCells) {
+                if (cell.passable) {
+                    const tile = game_map.getTile(cell.c, cell.r);
+                    if (tile.monster) tile.monster.hit(dmg);
+                    tile.setEffect(effect);
+                    if (tile.can_burn) tile.replace(Fire);
+
+                    let neighbors = tile.getAdjacentNeighbors();
+                    for (let n of neighbors) {
+                        if (n.can_burn && Math.random() > FIRE_SPREAD) {
+                            n.replace(Fire);
+                        }
+                    }
                 }
             }
+        } else { // fire in last direction
+            let testTile = newTile.getNeighbor(direction[0], direction[1]);
+            if (testTile.passable) {
+                newTile = testTile;
+                if (newTile.monster) {
+                    newTile.monster.hit(dmg);
+                }
+                newTile.setEffect(effect);
 
-            // add new fire entity to burnable things
-            if (newTile.can_burn) {//sprite == SPRITES.grass) {
-                newTile.replace(Fire);
+                let neighbors = newTile.getAdjacentNeighbors();
+                for (let n of neighbors) {
+                    if (n.can_burn && Math.random() > FIRE_SPREAD) {
+                        n.replace(Fire);
+                    }
+                }
+
+                // add new fire entity to burnable things
+                if (newTile.can_burn) {//sprite == SPRITES.grass) {
+                    newTile.replace(Fire);
+                }
+
+            } else {
+                break;
             }
-
-        } else {
-            break;
         }
     }
 }
