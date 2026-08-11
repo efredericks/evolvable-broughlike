@@ -19,21 +19,22 @@ const SPRITES = {
     player: { c: 13, r: 0, hp: 5000, name: "Player", mana: 6 },
 
     // enemies
-    snake: { c: 4, r: 1, hp: 1, name: "Snake", mana: 6, drops: [{ item: 'hp_potion', chance: 0.7 }, { item: 'mp_potion', chance: 0.7 }] },
-    dog: { c: 5, r: 1, hp: 3, name: "Dog", mana: 6, drops: [{ item: 'hp_potion', chance: 0.7 }, { item: 'mp_potion', chance: 0.7 }] },
-    rat: { c: 6, r: 1, hp: 2, name: "Rat", mana: 6, drops: [{ item: 'hp_potion', chance: 0.7 }, { item: 'mp_potion', chance: 0.7 }] },
-    tick: { c: 7, r: 1, hp: 5, name: "Tick", mana: 6, drops: [{ item: 'hp_potion', chance: 0.7 }, { item: 'mp_potion', chance: 0.7 }] },
-    blob: { c: 8, r: 1, hp: 4, name: "Blob", mana: 6, drops: [{ item: 'hp_potion', chance: 0.7 }, { item: 'mp_potion', chance: 0.7 }] },
-    ghost: { c: 9, r: 1, hp: 6, name: "Ghost", mana: 6, drops: [{ item: 'hp_potion', chance: 0.7 }, { item: 'mp_potion', chance: 0.7 }] },
-    turtle: { c: 10, r: 1, hp: 8, name: "Turtle", mana: 6, drops: [{ item: 'hp_potion', chance: 0.7 }, { item: 'mp_potion', chance: 0.7 }] },
-    octopode: { c: 11, r: 1, hp: 2, name: "Octopode", mana: 6, drops: [{ item: 'hp_potion', chance: 0.7 }, { item: 'mp_potion', chance: 0.7 }] },
-    mushroom: { c: 12, r: 1, hp: 4, name: "Mushroom", mana: 6, drops: [{ item: 'hp_potion', chance: 0.7 }, { item: 'mp_potion', chance: 0.7 }] },
-    fire: { c: 8, r: 8, hp: 5, name: "Fire", mana: 6, drops: [{ item: 'hp_potion', chance: 0.7 }, { item: 'mp_potion', chance: 0.7 }] },
-    trap: { c: 1, r: 8, hp: 3, name: "Trap", mana: 6, drops: [{ item: 'hp_potion', chance: 0.7 }, { item: 'mp_potion', chance: 0.7 }] },
+    snake: { c: 4, r: 1, hp: 1, name: "Snake", mana: 6, drops: [{ item: 'hp_potion', chance: 0.7 }, { item: 'mp_potion', chance: 0.7 }, { item: 'coin', chance: 0.5 }] },
+    dog: { c: 5, r: 1, hp: 3, name: "Dog", mana: 6, drops: [{ item: 'hp_potion', chance: 0.7 }, { item: 'mp_potion', chance: 0.7 }, { item: 'coin', chance: 0.5 }] },
+    rat: { c: 6, r: 1, hp: 2, name: "Rat", mana: 6, drops: [{ item: 'hp_potion', chance: 0.7 }, { item: 'mp_potion', chance: 0.7 }, { item: 'coin', chance: 0.5 }] },
+    tick: { c: 7, r: 1, hp: 5, name: "Tick", mana: 6, drops: [{ item: 'hp_potion', chance: 0.7 }, { item: 'mp_potion', chance: 0.7 }, { item: 'coin', chance: 0.5 }] },
+    blob: { c: 8, r: 1, hp: 4, name: "Blob", mana: 6, drops: [{ item: 'hp_potion', chance: 0.7 }, { item: 'mp_potion', chance: 0.7 }, { item: 'coin', chance: 0.5 }] },
+    ghost: { c: 9, r: 1, hp: 6, name: "Ghost", mana: 6, drops: [{ item: 'hp_potion', chance: 0.7 }, { item: 'mp_potion', chance: 0.7 }, { item: 'coin', chance: 0.5 }] },
+    turtle: { c: 10, r: 1, hp: 8, name: "Turtle", mana: 6, drops: [{ item: 'hp_potion', chance: 0.7 }, { item: 'mp_potion', chance: 0.7 }, { item: 'coin', chance: 0.5 }] },
+    octopode: { c: 11, r: 1, hp: 2, name: "Octopode", mana: 6, drops: [{ item: 'hp_potion', chance: 0.7 }, { item: 'mp_potion', chance: 0.7 }, { item: 'coin', chance: 0.5 }] },
+    mushroom: { c: 12, r: 1, hp: 4, name: "Mushroom", mana: 6, drops: [{ item: 'hp_potion', chance: 0.7 }, { item: 'mp_potion', chance: 0.7 }, { item: 'coin', chance: 0.5 }] },
+    fire: { c: 8, r: 8, hp: 5, name: "Fire", mana: 6, drops: [{ item: 'hp_potion', chance: 0.7 }, { item: 'mp_potion', chance: 0.7 }, { item: 'coin', chance: 0.5 }] },
+    trap: { c: 1, r: 8, hp: 3, name: "Trap", mana: 6, drops: [{ item: 'hp_potion', chance: 0.7 }, { item: 'mp_potion', chance: 0.7 }, { item: 'coin', chance: 0.5 }] },
 
     // items
     hp_potion: { c: 7, r: 8, name: "Health potion", amt: 2 },
     mp_potion: { c: 0, r: 10, name: "Mana potion", amt: 2 },
+    coin: { c: 8, r: 5, name: "Coin", amt: 1 },
 
     // env:, c, r
     wall: { c: 2, r: 1 },

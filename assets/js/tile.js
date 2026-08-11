@@ -115,6 +115,9 @@ class Tile {
                             monster.healMP(SPRITES.mp_potion?.amt ?? 1);
                             remove_item = true;
                         }
+                    } else if (this.item == SPRITES.coin) {
+                        monster.cash += SPRITES.coin?.amt ?? 1;
+                        remove_item = true;
                     }
 
                     if (remove_item)

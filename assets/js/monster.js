@@ -16,6 +16,7 @@ class Monster {
 
         this.name = sprite?.name ?? "MISSING";
         this.drops = sprite?.drops ?? null;
+        this.cash = 0;
 
         this.dead = false;
         this.stunned = false; // can't move
