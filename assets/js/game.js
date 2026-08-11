@@ -67,6 +67,7 @@ class Game {
                 if (e.key == "6") spells.CROSS(this.player);
                 if (e.key == "7") spells.EX(this.player);
                 if (e.key == "8") spells.BOLT(this.player, true);
+                if (e.key == "9") spells.TREE_RING(this.player);
 
                 // agent
                 if (e.key == "p") this.autoplay = !this.autoplay;

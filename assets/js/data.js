@@ -11,7 +11,7 @@ const bg = "#222323";
 const numLevels = 6;
 const local_storage_name = "evo-broughlike-scores";
 const effectMax = 100;
-const GRASS_SPREAD = 0.95;
+const GRASS_SPREAD = 0.98;
 const FIRE_SPREAD = 0.5;
 
 const SPRITES = {
@@ -52,6 +52,7 @@ const SPRITES = {
     hriver: { c: 12, r: 6 },
     vriver: { c: 13, r: 6 },
     ladder: { c: 11, r: 5 },
+    pavement: {c: 1, r: 10},
 
     // ui: c, r
 
@@ -63,6 +64,11 @@ const TREE_TILES = [SPRITES.tree1, SPRITES.tree2];
 const DIRS = [
     [-1, 0], [0, -1], [1, 0], [0, 1], [0, 0]
 ];
+// ring around position
+const NEIGHBOR_DIRS = [
+    [-1, 0], [0, -1], [1, 0], [0, 1], 
+    [-1, -1], [1, -1], [-1, 1], [1, 1]
+]
 
 // mana cost per spell
 const SPELL_COST = {
@@ -73,6 +79,7 @@ const SPELL_COST = {
     BOLT: 2,
     CROSS: 2,
     EX: 2,
+    TREE_RING: 6,
 }
 
 const AIType = {

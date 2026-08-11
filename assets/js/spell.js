@@ -73,6 +73,25 @@ spells = {
                 boltTravel(e, d, SPRITES.fire, 15 + Math.abs(d[1]));
 
         }
+    },
+
+    // spawn ring of trees around target
+    TREE_RING: (e) => {
+        if (mouseCells.length > 0) { // has target
+            if (e.checkCast('TREE_RING')) { // can cast
+                let cell = mouseCells[mouseCells.length - 1]; // get last cell
+                let target = e.getGameMap().getTile(cell.c, cell.r);
+                if (target) {
+                    e.game.shakeAmount = 20;
+                    for (let dir of NEIGHBOR_DIRS) {
+                        let neighbor = target.getNeighbor(dir[0], dir[1]);
+                        if (neighbor && neighbor.passable) {
+                            neighbor.replace(Tree);
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 

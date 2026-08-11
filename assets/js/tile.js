@@ -138,6 +138,12 @@ class Floor extends Tile {
     //     }
     // }
 }
+class Pavement extends Tile {
+    constructor(game, x, y, global_position) {
+        super(game, x, y, SPRITES.pavement, true, global_position);
+        // this.can_burn = false;
+    }
+}
 class Wall extends Tile {
     constructor(game, x, y, global_position) {
         super(game, x, y, SPRITES.wall, false, global_position);
@@ -205,7 +211,7 @@ class Grave extends Tile {
     update() {
         this.hp--;
         if (this.hp <= 0) {
-            this.replace(Floor);
+            this.replace(Floor); // replace pavement!!
         }
     }
 }

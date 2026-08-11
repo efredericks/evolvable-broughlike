@@ -19,21 +19,25 @@ class GameMap {
 
                 // temporarily give a 'border' around the world to avoid softlocking (doesn't help with walls)
                 if (r == 0 || c == 0 || r == numTiles - 1 || c == numTiles - 1) {
-                    let t = shuffle(WALKABLE_TILES)[0];
+                    let t = Floor;
                     this.tiles[r][c] = new t(this.game, c, r, this.global_position);//Floor(this.game, c, r);
                 } else {
                     const n = noise.simplex2(world_pos.world_col * zoom, world_pos.world_row * zoom);
                     if (n < -0.85 || n > 0.85) {
                         this.tiles[r][c] = new Wall(this.game, c, r, this.global_position);
                     } else if (n < -0.5 || n > 0.5) {
-                        let t = shuffle(WALKABLE_TILES)[0];
+                        let t = Floor;
                         this.tiles[r][c] = new t(this.game, c, r, this.global_position);//Floor(this.game, c, r);
                     } else if (n < -0.25 || n > 0.25) {
                         this.tiles[r][c] = new Tree(this.game, c, r, this.global_position);
                     } else {
-                        let t = shuffle(WALKABLE_TILES)[0];
+                        let t = Floor;
                         this.tiles[r][c] = new t(this.game, c, r, this.global_position);//Floor(this.game, c, r);
                     }
+                    
+                    // if floor, replace with grass
+                    if (Math.random() > 0.9 && this.tiles[r][c] instanceof Floor)
+                        this.tiles[r][c].replace(Grass);
 
                     if (Math.random() > 0.9) {
                         if (this.tiles[r][c].passable)
@@ -53,6 +57,32 @@ class GameMap {
                 // }
             }
         }
+
+        // generate path to each quadrant
+        let start_c = 0;
+        let start_r = 0;
+        let end_c = numTiles;
+        let end_r = numTiles;
+
+        if (wc == 0) start_c = Math.floor(numTiles / 2);
+        if (wr == 0) start_r = Math.floor(numTiles / 2);
+        if (wc == GRID_COLS - 1) end_c = Math.ceil(numTiles / 2);
+        if (wr == GRID_ROWS - 1) end_r = Math.ceil(numTiles / 2);
+
+
+        let mid_c = Math.floor(numTiles / 2);
+        for (let c = start_c; c < end_c; c++) {
+            this.tiles[mid_c][c].replace(Pavement);
+            if (mid_c - 1 >= 0) this.tiles[mid_c - 1][c].replace(Pavement);
+            if (mid_c + 1 < numTiles-1) this.tiles[mid_c + 1][c].replace(Pavement);
+        }
+        for (let r = start_r; r < end_r; r++) {
+            this.tiles[r][mid_c].replace(Pavement);
+
+            if (mid_c - 1 >= 0) this.tiles[r][mid_c - 1].replace(Pavement);
+            if (mid_c + 1 < numTiles-1) this.tiles[r][mid_c + 1].replace(Pavement);
+        }
+
     }
 
 
