@@ -39,10 +39,11 @@ class GameMap {
                     if (Math.random() > 0.9 && this.tiles[r][c] instanceof Floor)
                         this.tiles[r][c].replace(Grass);
 
-                    if (Math.random() > 0.9) {
-                        if (this.tiles[r][c].passable)
-                            this.tiles[r][c].item = shuffle([SPRITES.hp_potion, SPRITES.mp_potion])[0];
-                    }
+                    // dropped by enemies
+                    // if (Math.random() > 0.9) {
+                    //     if (this.tiles[r][c].passable)
+                    //         this.tiles[r][c].item = shuffle([SPRITES.hp_potion, SPRITES.mp_potion])[0];
+                    // }
                 }
 
 
@@ -85,7 +86,7 @@ class GameMap {
 
     }
 
-
+    // old level generator - deprecated
     generateLevel() {
         // this.generateTiles();
         tryTo('generate connected map', () => {

@@ -15,6 +15,7 @@ class Monster {
         this.max_mana = sprite?.mana ?? -1;
 
         this.name = sprite?.name ?? "MISSING";
+        this.drops = sprite?.drops ?? null;
 
         this.dead = false;
         this.stunned = false; // can't move
@@ -183,7 +184,21 @@ class Monster {
         }
     }
 
+    // lookup items to drop and percent chance
+    tryDrop() {
+        if (this.drops !== null) { // we have drops
+            const drop = shuffle(this.drops)[0];
+            if (Math.random() > drop.chance) {
+                if (this.tile.item === null) {
+                    this.tile.item = SPRITES[drop.item];
+                }
+            }
+        }
+    }
+
     die() {
+        this.tryDrop();
+
         if (!this.tile.monster.isPlayer) this.game.score++;
 
         this.dead = true;

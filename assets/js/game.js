@@ -59,6 +59,19 @@ class Game {
 
                 // debug
                 if (e.key == "H") this.player.hp = this.player.max_hp;
+                if (e.key == "K") {
+                    let _map = this.getCurrentGameMap();
+                    for (let r = 0; r < numTiles; r++) {
+                        for (let c = 0; c < numTiles; c++) {
+                            const tile = _map.getTile(c, r);
+                            if (tile.monster && !tile.monster.isPlayer) {
+                                tile.monster.die();
+                            }
+                        }
+                    }
+                    _map.spawn_rate = 15;
+                    _map.spawn_counter = 0;
+                }
                 if (e.key == "1") spells.TELEPORT(this.player);
                 if (e.key == "2") spells.QUAKE(this.player);
                 if (e.key == "3") spells.TP_OTHERS(this.player);

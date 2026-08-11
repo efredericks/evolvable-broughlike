@@ -16,22 +16,24 @@ const FIRE_SPREAD = 0.5;
 
 const SPRITES = {
     // moveable entities: c, r, hp
-    player: { c: 13, r: 0, hp: 5, name: "Player", mana: 6 },
-    snake: { c: 4, r: 1, hp: 1, name: "Snake", mana: 6 },
-    dog: { c: 5, r: 1, hp: 3, name: "Dog", mana: 6 },
-    rat: { c: 6, r: 1, hp: 2, name: "Rat", mana: 6 },
-    tick: { c: 7, r: 1, hp: 5, name: "Tick", mana: 6 },
-    blob: { c: 8, r: 1, hp: 4, name: "Blob", mana: 6 },
-    ghost: { c: 9, r: 1, hp: 6, name: "Ghost", mana: 6 },
-    turtle: { c: 10, r: 1, hp: 8, name: "Turtle", mana: 6 },
-    octopode: { c: 11, r: 1, hp: 2, name: "Octopode", mana: 6 },
-    mushroom: { c: 12, r: 1, hp: 4, name: "Mushroom", mana: 6 },
-    fire: { c: 8, r: 8, hp: 5, name: "Fire", mana: 6 },
-    trap: { c: 1, r: 8, hp: 3, name: "Trap", mana: 6 },
+    player: { c: 13, r: 0, hp: 5000, name: "Player", mana: 6 },
+
+    // enemies
+    snake: { c: 4, r: 1, hp: 1, name: "Snake", mana: 6, drops: [{ item: 'hp_potion', chance: 0.7 }, { item: 'mp_potion', chance: 0.7 }] },
+    dog: { c: 5, r: 1, hp: 3, name: "Dog", mana: 6, drops: [{ item: 'hp_potion', chance: 0.7 }, { item: 'mp_potion', chance: 0.7 }] },
+    rat: { c: 6, r: 1, hp: 2, name: "Rat", mana: 6, drops: [{ item: 'hp_potion', chance: 0.7 }, { item: 'mp_potion', chance: 0.7 }] },
+    tick: { c: 7, r: 1, hp: 5, name: "Tick", mana: 6, drops: [{ item: 'hp_potion', chance: 0.7 }, { item: 'mp_potion', chance: 0.7 }] },
+    blob: { c: 8, r: 1, hp: 4, name: "Blob", mana: 6, drops: [{ item: 'hp_potion', chance: 0.7 }, { item: 'mp_potion', chance: 0.7 }] },
+    ghost: { c: 9, r: 1, hp: 6, name: "Ghost", mana: 6, drops: [{ item: 'hp_potion', chance: 0.7 }, { item: 'mp_potion', chance: 0.7 }] },
+    turtle: { c: 10, r: 1, hp: 8, name: "Turtle", mana: 6, drops: [{ item: 'hp_potion', chance: 0.7 }, { item: 'mp_potion', chance: 0.7 }] },
+    octopode: { c: 11, r: 1, hp: 2, name: "Octopode", mana: 6, drops: [{ item: 'hp_potion', chance: 0.7 }, { item: 'mp_potion', chance: 0.7 }] },
+    mushroom: { c: 12, r: 1, hp: 4, name: "Mushroom", mana: 6, drops: [{ item: 'hp_potion', chance: 0.7 }, { item: 'mp_potion', chance: 0.7 }] },
+    fire: { c: 8, r: 8, hp: 5, name: "Fire", mana: 6, drops: [{ item: 'hp_potion', chance: 0.7 }, { item: 'mp_potion', chance: 0.7 }] },
+    trap: { c: 1, r: 8, hp: 3, name: "Trap", mana: 6, drops: [{ item: 'hp_potion', chance: 0.7 }, { item: 'mp_potion', chance: 0.7 }] },
 
     // items
-    hp_potion: {c: 7, r: 8, name: "Health potion", amt: 2},
-    mp_potion: {c: 0, r: 10, name: "Mana potion", amt: 2},
+    hp_potion: { c: 7, r: 8, name: "Health potion", amt: 2 },
+    mp_potion: { c: 0, r: 10, name: "Mana potion", amt: 2 },
 
     // env:, c, r
     wall: { c: 2, r: 1 },
@@ -52,7 +54,7 @@ const SPRITES = {
     hriver: { c: 12, r: 6 },
     vriver: { c: 13, r: 6 },
     ladder: { c: 11, r: 5 },
-    pavement: {c: 1, r: 10},
+    pavement: { c: 1, r: 10 },
 
     // ui: c, r
 
@@ -66,7 +68,7 @@ const DIRS = [
 ];
 // ring around position
 const NEIGHBOR_DIRS = [
-    [-1, 0], [0, -1], [1, 0], [0, 1], 
+    [-1, 0], [0, -1], [1, 0], [0, 1],
     [-1, -1], [1, -1], [-1, 1], [1, 1]
 ]
 
