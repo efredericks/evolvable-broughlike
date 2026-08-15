@@ -54,6 +54,8 @@ spells = {
 
     // send bolt along path
     BOLT: (e, along_path = false) => {
+        if (along_path && mouseTimer <= 0) return; // TBD: constrains to user path - not ideal
+
         if (e.checkCast('BOLT')) {
             boltTravel(e, e.lastMove, SPRITES.fire, 15 + Math.abs(e.lastMove[1]), along_path);
         }

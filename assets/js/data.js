@@ -25,7 +25,8 @@ const SPRITES = {
     tick: { c: 7, r: 1, hp: 5, name: "Tick", mana: 6, drops: [{ item: 'hp_potion', chance: 0.7 }, { item: 'mp_potion', chance: 0.7 }, { item: 'coin', chance: 0.5 }] },
     blob: { c: 8, r: 1, hp: 4, name: "Blob", mana: 6, drops: [{ item: 'hp_potion', chance: 0.7 }, { item: 'mp_potion', chance: 0.7 }, { item: 'coin', chance: 0.5 }] },
     ghost: { c: 9, r: 1, hp: 6, name: "Ghost", mana: 6, drops: [{ item: 'hp_potion', chance: 0.7 }, { item: 'mp_potion', chance: 0.7 }, { item: 'coin', chance: 0.5 }] },
-    turtle: { c: 10, r: 1, hp: 8, name: "Turtle", mana: 6, drops: [{ item: 'hp_potion', chance: 0.7 }, { item: 'mp_potion', chance: 0.7 }, { item: 'coin', chance: 0.5 }] },
+    turtle: { c: 2, r: 10, hp: 8, name: "Turtle", mana: 6, drops: [{ item: 'hp_potion', chance: 0.7 }, { item: 'mp_potion', chance: 0.7 }, { item: 'coin', chance: 0.5 }] },
+    // turtle: { c: 10, r: 1, hp: 8, name: "Turtle", mana: 6, drops: [{ item: 'hp_potion', chance: 0.7 }, { item: 'mp_potion', chance: 0.7 }, { item: 'coin', chance: 0.5 }] },
     octopode: { c: 11, r: 1, hp: 2, name: "Octopode", mana: 6, drops: [{ item: 'hp_potion', chance: 0.7 }, { item: 'mp_potion', chance: 0.7 }, { item: 'coin', chance: 0.5 }] },
     mushroom: { c: 12, r: 1, hp: 4, name: "Mushroom", mana: 6, drops: [{ item: 'hp_potion', chance: 0.7 }, { item: 'mp_potion', chance: 0.7 }, { item: 'coin', chance: 0.5 }] },
     fire: { c: 8, r: 8, hp: 5, name: "Fire", mana: 6, drops: [{ item: 'hp_potion', chance: 0.7 }, { item: 'mp_potion', chance: 0.7 }, { item: 'coin', chance: 0.5 }] },
@@ -95,3 +96,5 @@ let mouseY = 0;
 let hoverRow = -1;
 let hoverCol = -1;
 let mouseCells = [];
+let mouseTimeout = 250;
+let mouseTimer = 0;

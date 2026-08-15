@@ -3,12 +3,69 @@
 // must solve grid before moving on
 // can backtrack
 
+function runEvolution() {
+    alert("hey");
+}
+
 const STATES = Object.freeze({
     title: 0,
     loading: 1,
     running: 2,
-    dead: 3
+    dead: 3,
+    evolving: 4,
 });
+
+class RoomGenome {
+    constructor() {
+        this.layout = [];
+
+        for (let r = 0; r < numTiles; r++) {
+            this.layout[r] = [];
+            for (let c = 0; c < numTiles; c++) {
+                this.layout[r][c] = "";
+            }
+        }
+    }
+}
+
+class Evolvable {
+    constructor(game, gens, popsize, xover_rate = 0.6, mut_rate = 0.3, elites = 0) {
+        this.game = game;
+
+        this.current_generation = 0;
+        this.generations = gens;
+        this.population_size = popsize;
+        this.crossover_rate = xover_rate;
+        this.mutation_rate = mut_rate;
+        this.num_elites = elites;
+        this.evolution_done = false;
+
+        this.population = [];
+    }
+
+    runGeneration() {
+
+    }
+
+    evaluate() {
+
+        // old generate
+        for (let r = 0; r < GRID_ROWS; r++) {
+            this.game.game_maps[r] = [];
+            for (let c = 0; c < GRID_COLS; c++) {
+                this.game.game_maps[r][c] = new GameMap(this.game, c, r);
+                this.game.game_maps[r][c].generateLevelFromWorld(c, r);
+
+                this.game.game_maps[r][c].spawn_rate = 15;
+                this.game.game_maps[r][c].spawn_counter = this.game.game_maps[r][c].spawn_rate;
+            }
+        }
+
+        // staircase in last corner
+        this.game.game_maps[GRID_ROWS - 1][GRID_COLS - 1].stairs_tile = this.game.game_maps[GRID_ROWS - 1][GRID_COLS - 1].randomPassableTile();
+        this.game.game_maps[GRID_ROWS - 1][GRID_COLS - 1].stairs_tile.replace(StairsDown);
+    }
+}
 class Game {
     constructor() {
         this.canvas = document.getElementById("game");
@@ -19,6 +76,10 @@ class Game {
         this.canvas.style.aspectRatio = `${numTiles + uiWidth} / ${numTiles}`;
         this.canvas.style.width = 'auto';
         this.canvas.style.height = 'auto';
+
+        this.current_generation = 0;
+        this.generations = 0;
+        this.evolution_done = false;
 
         // noise.seed(Math.random());
 
@@ -43,13 +104,26 @@ class Game {
 
         // input handling
         document.querySelector("html").onkeypress = (e) => {
-            if (this.state == STATES.title) {
+            // evolution state
+            if (this.state == STATES.evolving); // don't allow keypresses
+
+            // title screen
+            else if (this.state == STATES.title) {
+                // setup evolver
+                const gens = document.getElementById("gens").value;
+                const popsize = document.getElementById("popsize").value;
+                this.evolvable = new Evolvable(this, gens, popsize);
+
                 if (e.key == "C") {
                     this.clearScores();
                     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
                     this.showTitle();
                 } else this.startGame();
+
+                // dead
             } else if (this.state == STATES.dead) this.showTitle();
+
+            // running state
             else if (this.state == STATES.running) {
                 if (e.key == "w") this.player.tryMove(0, -1);
                 if (e.key == "s") this.player.tryMove(0, 1);
@@ -128,6 +202,7 @@ class Game {
 
     // run inside setInterval
     intervalTasks() {
+        if (this.state == STATES.evolving) this.evolve(); // evolve as part of interval ... better as a webworker later
         this.draw();
         if (this.autoplay && this.state == STATES.running) this.agent.act();
     }
@@ -214,30 +289,38 @@ class Game {
         this.autoplay = false;
 
         this.startLevel(SPRITES.player.hp);
-        this.state = STATES.running;
+        // this.state = STATES.running;
+        this.state = STATES.evolving;
 
         // setInterval(() => this.draw(), 15);
     }
+
+    // running async - evo configs must be part of class
+    evolve() {
+
+    }
+
     startLevel(hp) {
         noise.seed(Math.random());
         // this.spawn_rate = 15;
         // this.spawn_counter = this.spawn_rate;
 
         this.game_maps = [];
-        for (let r = 0; r < GRID_ROWS; r++) {
-            this.game_maps[r] = [];
-            for (let c = 0; c < GRID_COLS; c++) {
-                this.game_maps[r][c] = new GameMap(this, c, r);
-                this.game_maps[r][c].generateLevelFromWorld(c, r);
+        this.evolvable.evaluate();
+        // for (let r = 0; r < GRID_ROWS; r++) {
+        //     this.game_maps[r] = [];
+        //     for (let c = 0; c < GRID_COLS; c++) {
+        //         this.game_maps[r][c] = new GameMap(this, c, r);
+        //         this.game_maps[r][c].generateLevelFromWorld(c, r);
 
-                this.game_maps[r][c].spawn_rate = 15;
-                this.game_maps[r][c].spawn_counter = this.game_maps[r][c].spawn_rate;
-            }
-        }
+        //         this.game_maps[r][c].spawn_rate = 15;
+        //         this.game_maps[r][c].spawn_counter = this.game_maps[r][c].spawn_rate;
+        //     }
+        // }
 
-        // staircase in last corner
-        this.game_maps[GRID_ROWS - 1][GRID_COLS - 1].stairs_tile = this.game_maps[GRID_ROWS - 1][GRID_COLS - 1].randomPassableTile();
-        this.game_maps[GRID_ROWS - 1][GRID_COLS - 1].stairs_tile.replace(StairsDown);
+        // // staircase in last corner
+        // this.game_maps[GRID_ROWS - 1][GRID_COLS - 1].stairs_tile = this.game_maps[GRID_ROWS - 1][GRID_COLS - 1].randomPassableTile();
+        // this.game_maps[GRID_ROWS - 1][GRID_COLS - 1].stairs_tile.replace(StairsDown);
 
         this.player = new Player(this, this.game_maps[0][0].randomPassableTile());
         this.player.hp = hp;
@@ -324,6 +407,7 @@ class Game {
 
 
     }
+
     draw() {
         if (this.state == STATES.running || this.state == STATES.dead) {
             this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -383,6 +467,74 @@ class Game {
 
             this.drawUI();
             this.drawMouse();
+        } else if (this.state == STATES.evolving) {
+            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            this.drawText("evolving...", 40, true, this.canvas.height / 3, "white");
+            this.drawText(`generation ${this.evolvable.current_generation} / ${this.evolvable.generations}`, 20, true, this.canvas.height / 3 + 30, "white");
+
+
+            // draw some "DNA"
+            let x = 0;
+            let y = 0;
+            const amplitude = 40;
+            const frequency = 20;
+            const phi = 2.44; // Realistic DNA phase shift
+
+            // first strand
+            this.ctx.beginPath();
+            x = 0;
+            while (x < this.canvas.width) {
+                y = this.canvas.height / 2 + amplitude * Math.sin((x / frequency) - 0.05 * this.evolvable.current_generation);
+                if (x === 0) this.ctx.moveTo(x, y);
+                this.ctx.lineTo(x, y);
+                x++;
+            }
+
+            this.ctx.strokeStyle = "#3b82f6"; // blue strand
+            this.ctx.lineWidth = 3;
+            this.ctx.stroke();
+
+            // second strand with phase offset
+            this.ctx.beginPath();
+            x = 0;
+            while (x < this.canvas.width) {
+                y = this.canvas.height / 2 + amplitude * Math.sin((x / frequency) - 0.05 * this.evolvable.current_generation - phi);
+                if (x === 0) this.ctx.moveTo(x, y);
+                this.ctx.lineTo(x, y);
+                x++;
+            }
+
+            this.ctx.strokeStyle = "#ef4444"; // red strand
+            this.ctx.lineWidth = 3;
+            this.ctx.stroke();
+
+            // base pair connectors
+            this.ctx.beginPath();
+            const lineSpacing = 15; // separating distance
+            x = 0;
+
+            while (x < this.canvas.width) {
+                // calculate y based on strands
+                const y1 = this.canvas.height / 2 + amplitude * Math.sin((x / frequency) - 0.05 * this.evolvable.current_generation);
+                const y2 = this.canvas.height / 2 + amplitude * Math.sin((x / frequency) - 0.05 * this.evolvable.current_generation - phi);
+
+                // Draw a line connecting the two calculated points
+                this.ctx.moveTo(x, y1);
+                this.ctx.lineTo(x, y2);
+
+                x += lineSpacing; // go to next bar
+            }
+            this.ctx.strokeStyle = "#94a3b8"; // gray bars
+            this.ctx.lineWidth = 1.5;
+            this.ctx.stroke();
+
+
+            // move this out to an update loop 
+            this.evolvable.current_generation++;
+            if (this.evolvable.current_generation > this.evolvable.generations) {
+                this.evolvable.evolution_done = true;
+                this.state = STATES.running;
+            }
         }
     }
     // orthogonal/supercover line c/o redblob: https://www.redblobgames.com/grids/line-drawing/
@@ -454,29 +606,43 @@ class Game {
         return cells_along_line;
     }
     drawMouse() {
-        const ht = tileSize / 2;
-        let [mx, my] = getCanvasCoords(this.ctx, mouseX, mouseY);
+        if (mouseTimer > 0) {
+            mouseTimer--;
 
-        if (mx >= 0 && mx < this.canvas.width - uiWidth * tileSize && my >= 0 && my <= this.canvas.height) {
-            hoverCol = Math.floor(mx / tileSize);
-            hoverRow = Math.floor(my / tileSize);
+            const ht = tileSize / 2;
+            let [mx, my] = getCanvasCoords(this.ctx, mouseX, mouseY);
 
-            const x = hoverCol * tileSize;
-            const y = hoverRow * tileSize;
+            const alpha = scaleValue(mouseTimer, 0, mouseTimeout, 0.0, 1.0);
 
-            // const cells_to_draw = this.drawLineToMouse(hoverCol, hoverRow);
-            mouseCells = this.drawLineToMouse(hoverCol, hoverRow);
-            for (let cell of mouseCells) {
-                if (cell.passable) {
-                    this.ctx.strokeStyle = "#00c8ff";
-                } else {
-                    this.ctx.strokeStyle = "#ff9500";
+            if (mx >= 0 && mx < this.canvas.width - uiWidth * tileSize && my >= 0 && my <= this.canvas.height) {
+                hoverCol = Math.floor(mx / tileSize);
+                hoverRow = Math.floor(my / tileSize);
+
+                const x = hoverCol * tileSize;
+                const y = hoverRow * tileSize;
+
+                // const cells_to_draw = this.drawLineToMouse(hoverCol, hoverRow);
+                mouseCells = this.drawLineToMouse(hoverCol, hoverRow);
+                for (let cell of mouseCells) {
+                    if (cell.passable) {
+                        // this.ctx.strokeStyle = "#00c8ff";
+                        this.ctx.strokeStyle = `rgba(0,200,255,${alpha})`
+                    } else {
+                        // this.ctx.strokeStyle = "#ff9500";
+                        this.ctx.strokeStyle = `rgba(255,149,0,${alpha})`
+                    }
+                    this.ctx.strokeRect(cell.x, cell.y, tileSize, tileSize);
                 }
-                this.ctx.strokeRect(cell.x, cell.y, tileSize, tileSize);
-            }
 
-            this.ctx.strokeStyle = "#ff00ff";
-            this.ctx.strokeRect(x, y, tileSize, tileSize);
+
+
+                this.ctx.strokeStyle = `rgba(255,0,255,${alpha})`
+                this.ctx.strokeRect(x, y, tileSize, tileSize);
+            } else {
+                hoverRow = -1;
+                hoverCol = -1;
+                mouseCells = [];
+            }
         } else {
             hoverRow = -1;
             hoverCol = -1;

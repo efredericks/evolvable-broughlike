@@ -78,6 +78,15 @@
             color: white;
             text-align: right;
         }
+
+        #controls {
+            text-align: left;
+            padding: 1em;
+        }
+
+        fieldset {
+            padding: 1em;
+        }
     </style>
 
 </head>
@@ -98,6 +107,63 @@ if (e.key == "9") spells.TREE_RING (at mouse cursor)</pre>
         <hr size="1" />
         <pre>if (e.key == "p") toggle autoplay
     if (e.key == "P") toggle speed</pre>
+
+        <hr size="1" />
+        <div id="controls">
+            <form>
+            <fieldset>
+                <legend>Evo Configuration</legend>
+                <label for="gens">Number of generations:</label><br />
+                <input type="range" name="gens" id="gens" min="1" max="5000" step="1" value="10"
+                    oninput="this.form.gensInput.value=this.value" />
+                <input type="number" name="gensInput" min="1" max="5000" value="10"
+                    oninput="this.form.gens.value=this.value" />
+
+                <hr size="1" />
+
+                <label for="gens">Population size:</label><br />
+                <input type="range" name="popsize" id="popsize" min="1" max="5000" step="1" value="10"
+                    oninput="this.form.popsizeInput.value=this.value" />
+                <input type="number" name="popsizeInput" min="1" max="5000" value="10"
+                    oninput="this.form.popsize.value=this.value" />
+
+                <hr size="1" />
+
+                <!-- <label for="xover">Crossover rate:</label><br />
+                    <input type="range" name="xover" id="xover" min="0.1" max="0.8" step="0.05" value="0.6"
+                        oninput="this.form.xoverInput.value=this.value" />
+                    <input type="number" name="xoverInput" min="0.1" max="0.8" value="0.6"
+                        oninput="this.form.xover.value=this.value" />
+
+                    <hr size="1" />
+
+                    <label for="xover">Mutation rate:</label><br />
+                    <input type="range" name="mutation" id="mutation" min="0.1" max="0.8" step="0.05" value="0.6"
+                        oninput="this.form.mutationInput.value=this.value" />
+                    <input type="number" name="mutationInput" min="0.1" max="0.8" value="0.3"
+                        oninput="this.form.mutation.value=this.value" />
+
+                    <hr size="1" /> -->
+
+                <!-- <label for="xover">Number of elites:</label><br />
+                    <input type="range" name="elites" id="elites" min="0" max="50" step="1" value="0"
+                        oninput="this.form.elitesInput.value=this.value" />
+                    <input type="number" name="elitesInput" min="0" max="50" value="0"
+                        oninput="this.form.elites.value=this.value" /> -->
+
+                <hr size="1" />
+
+                <!-- <button type="button" id="evo_run">Run evolution</button>
+
+                <hr size="1" /> -->
+
+                <label>Status</label>
+                <div id="status"></div>
+
+
+            </fieldset>
+            </form>
+        </div>
     </div>
     <!-- <h1>evolvable broughlike</h1> -->
     <canvas id="game"></canvas>
@@ -117,9 +183,28 @@ if (e.key == "9") spells.TREE_RING (at mouse cursor)</pre>
 
     <script>
         let game;
+        let evo_run_btn;
         window.addEventListener("load", () => {
             console.log("Page fully loaded (including images/styles)");
             game = new Game();
+
+            // evo_run_btn = document.getElementById("evo_run");
+            // evo_run_btn.addEventListener("click", function (event) {
+            //     evo_run_btn.innerHTML = "Running...";
+
+            //     let gens = document.getElementById("gens").value;
+            //     let pop_size = document.getElementById("popsize").value;
+
+            //     game.generations = gens;
+            //     game.pop_size = pop_size;
+
+            //     // let status_window = document.getElementById("status");
+            //     // for (let g = 0; g < gens; g++) {
+            //     //     status_window.innerHTML += `Generation ${g}<br />`;
+            //     // }
+
+            //     evo_run_btn.innerHTML = "Done - click to restart";
+            // });
         });
 
         window.addEventListener("mousemove", handleMouse);
