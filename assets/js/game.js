@@ -102,6 +102,8 @@ class Game {
         this.shakeX = 0;
         this.shakeY = 0;
 
+        this.animTimer = 0;
+
         // input handling
         document.querySelector("html").onkeypress = (e) => {
             // evolution state
@@ -410,6 +412,16 @@ class Game {
 
     draw() {
         if (this.state == STATES.running || this.state == STATES.dead) {
+            // weak 2-state animation
+            this.animTimer++;
+            let offsetActive = false;
+            const half_interval = this.interval_speed;//Math.floor(this.interval_speed / 2);
+            if (this.animTimer > this.interval_speed*2) {
+                this.animTimer = 0;
+            } else if (this.animTimer > half_interval) {
+                offsetActive = true;
+            }
+
             this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
             this.screenshake();
@@ -424,7 +436,7 @@ class Game {
 
             for (let r = 0; r < numTiles; r++) {
                 for (let c = 0; c < numTiles; c++) {
-                    this.getCurrentGameMap().getTile(c, r).draw();
+                    this.getCurrentGameMap().getTile(c, r).draw(offsetActive);
                 }
             }
             // lines to show allowable movement
@@ -459,11 +471,12 @@ class Game {
             // draw on top of gravestones
             let sorted_monsters = this.getCurrentGameMap().monsters.sort((a, b) => b.dead - a.dead);
             for (let sm of sorted_monsters)
-                sm.draw();
+                sm.draw(offsetActive);
             // for (let i = this.game_map.monsters.length - 1; i >= 0; i--) {
             //     this.game_map.monsters[i].draw();
             // }
-            this.player.draw();
+
+            this.player.draw(offsetActive);
 
             this.drawUI();
             this.drawMouse();
@@ -662,7 +675,16 @@ class Game {
             let t = this.getCurrentGameMap().tiles[hoverRow][hoverCol];
             if (t.monster != null) {
                 this.drawText(`${t.monster.name} [${t.monster.hp}/${t.monster.max_hp}]`, 20, false, 250, 'yellow');
+            } else if (t.item != null) {
+                this.drawText(`${t.item.name}`, 20, false, 250, 'yellow');
             }
+        }
+
+        // spell components
+        let y = 280;
+        for (let sc of SPELL_PIECES) {
+            this.drawText(`${sc}: ${this.player.spell_components[sc]} `, 20, false, y, 'green');
+            y += 30;
         }
 
         // panel consts

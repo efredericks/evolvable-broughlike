@@ -58,6 +58,10 @@ const SPRITES = {
     ladder: { c: 11, r: 5 },
     pavement: { c: 1, r: 10 },
 
+    // spell items
+    addTile: { c: 3, r: 6, name: "Add Tile" },
+    addFire: { c: 6, r: 8, name: "Add Fire" },
+    addPoison: { c: 3, r: 10, name: "Add Poison" },
     // ui: c, r
 
 }
@@ -73,6 +77,11 @@ const NEIGHBOR_DIRS = [
     [-1, 0], [0, -1], [1, 0], [0, 1],
     [-1, -1], [1, -1], [-1, 1], [1, 1]
 ]
+
+// lookup table for spell components
+const SPELL_PIECES = [
+    SPRITES.addFire.name, SPRITES.addTile.name, SPRITES.addPoison.name,
+];
 
 // mana cost per spell
 const SPELL_COST = {

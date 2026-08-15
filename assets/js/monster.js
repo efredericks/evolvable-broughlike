@@ -56,7 +56,10 @@ class Monster {
     }
 
     // draw the sprite and lerp if needed
-    draw() {
+    draw(anim=false) {
+        let offset = 0;
+        if (anim) offset = tileSize / 256;
+
         if (this.dead) {
             this.game.drawSprite(this.sprite, this.tile.x, this.tile.y);
         }
@@ -65,7 +68,7 @@ class Monster {
             this.game.drawSprite(SPRITES.teleport, this.getDisplayX(), this.getDisplayY(), this.teleport_counter);
         } else {
             // this.game.drawSprite(this.sprite, this.tile.x, this.tile.y);
-            this.game.drawSprite(this.sprite, this.getDisplayX(), this.getDisplayY());
+            this.game.drawSprite(this.sprite, this.getDisplayX(), this.getDisplayY()-offset);
             if (!this.dead)
                 this.drawHP();
         }
@@ -375,6 +378,11 @@ class Player extends Monster {
         super(game, tile, SPRITES.player);
         this.isPlayer = true;
         this.teleport_counter = 0;
+
+        this.spell_components = {};
+        for (let sc of SPELL_PIECES) {
+            this.spell_components[sc] = 0;
+        }
     }
 
     tryMove(dx, dy) {
@@ -386,6 +394,10 @@ class Player extends Monster {
                 super.healMP(0.5);
             }
         }
+    }
+
+    addSpellComponent(sc) {
+        this.spell_components[sc] += 1;
     }
 }
 

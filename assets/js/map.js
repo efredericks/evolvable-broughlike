@@ -40,10 +40,10 @@ class GameMap {
                         this.tiles[r][c].replace(Grass);
 
                     // dropped by enemies
-                    // if (Math.random() > 0.9) {
-                    //     if (this.tiles[r][c].passable)
-                    //         this.tiles[r][c].item = shuffle([SPRITES.hp_potion, SPRITES.mp_potion])[0];
-                    // }
+                    if (Math.random() > 0.9) {
+                        if (this.tiles[r][c].passable)
+                            this.tiles[r][c].item = shuffle([SPRITES.addFire, SPRITES.addPoison, SPRITES.addTile])[0];
+                    }
                 }
 
 

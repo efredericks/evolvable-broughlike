@@ -153,3 +153,21 @@ function boltTravel(e, direction, effect, dmg, along_path = false) {
         }
     }
 }
+
+
+
+////// sprite modifiers
+/*
+* distance = each adds 1 tile 
+* modifier:
+  * fire
+  * poison
+  * explosion on death
+  * trap
+  * 
+
+* spawn
+  * tree
+  * grass
+  * water
+*/

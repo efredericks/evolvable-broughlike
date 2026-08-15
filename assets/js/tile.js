@@ -21,15 +21,18 @@ class Tile {
 
     update() { }
 
-    draw() {
+    draw(anim=false) {
+        let offset = 0;
+        if (anim) offset = tileSize / 256;
+
         this.game.drawSprite(this.sprite, this.x, this.y, this.rot);
 
         if (this.treasure) {
-            this.game.drawSprite(SPRITES.ring, this.x, this.y);
+            this.game.drawSprite(SPRITES.ring, this.x, this.y-offset);
         }
 
         if (this.item) {
-            this.game.drawSprite(this.item, this.x, this.y);
+            this.game.drawSprite(this.item, this.x, this.y-offset);
         }
 
         if (this.effect_counter > 0) {
@@ -118,6 +121,9 @@ class Tile {
                     } else if (this.item == SPRITES.coin) {
                         monster.cash += SPRITES.coin?.amt ?? 1;
                         remove_item = true;
+                    } else if (SPELL_PIECES.includes(this.item.name)) {
+                        remove_item = true;
+                        monster.addSpellComponent(this.item.name);
                     }
 
                     if (remove_item)
