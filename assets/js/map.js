@@ -1,11 +1,20 @@
 
 // map things
 class GameMap {
-    constructor(game, c, r) {
+    // world is the 2D grid of sibling GameMaps this one belongs to (for multi-chunk overworlds / GA populations)
+    // pass null for a standalone map.
+    constructor(game, c, r, world = null) {
         this.game = game;
+        this.world = world;
         this.global_position = { c: c, r: r };
         this.tiles = [];
         this.monsters = [];
+    }
+
+    // look up a sibling map by chunk coords within the same world grid.
+    // returns null if this map is standalone (not part of a world).
+    getWorldMap(c, r) {
+        return this.world ? (this.world[r]?.[c] ?? null) : null;
     }
 
     // generate level from world
@@ -20,19 +29,19 @@ class GameMap {
                 // temporarily give a 'border' around the world to avoid softlocking (doesn't help with walls)
                 if (r == 0 || c == 0 || r == numTiles - 1 || c == numTiles - 1) {
                     let t = Floor;
-                    this.tiles[r][c] = new t(this.game, c, r, this.global_position);//Floor(this.game, c, r);
+                    this.tiles[r][c] = new t(this.game, this, c, r, this.global_position);
                 } else {
                     const n = noise.simplex2(world_pos.world_col * zoom, world_pos.world_row * zoom);
                     if (n < -0.85 || n > 0.85) {
-                        this.tiles[r][c] = new Wall(this.game, c, r, this.global_position);
+                        this.tiles[r][c] = new Wall(this.game, this, c, r, this.global_position);
                     } else if (n < -0.5 || n > 0.5) {
                         let t = Floor;
-                        this.tiles[r][c] = new t(this.game, c, r, this.global_position);//Floor(this.game, c, r);
+                        this.tiles[r][c] = new t(this.game, this, c, r, this.global_position);
                     } else if (n < -0.25 || n > 0.25) {
-                        this.tiles[r][c] = new Tree(this.game, c, r, this.global_position);
+                        this.tiles[r][c] = new Tree(this.game, this, c, r, this.global_position);
                     } else {
                         let t = Floor;
-                        this.tiles[r][c] = new t(this.game, c, r, this.global_position);//Floor(this.game, c, r);
+                        this.tiles[r][c] = new t(this.game, this, c, r, this.global_position);
                     }
                     
                     // if floor, replace with grass
@@ -51,9 +60,9 @@ class GameMap {
 
                 // if (world_pos.world_row < 40) {
                 // let t = shuffle(WALKABLE_TILES)[0];
-                // this.tiles[r][c] = new t(this.game, c, r, this.global_position);//Floor(this.game, c, r);
+                // this.tiles[r][c] = new t(this.game, this, c, r, this.global_position);
                 // } else {
-                //     this.tiles[r][c] = new Wall(this.game, c, r, this.global_position);
+                //     this.tiles[r][c] = new Wall(this.game, this, c, r, this.global_position);
 
                 // }
             }
@@ -179,10 +188,10 @@ class GameMap {
 
                 // let's allow the player to be on the boundary to give a bit more space to play with
                 if (Math.random() < 0.3) {// || !this.inBounds(c, r)) {
-                    this.tiles[r][c] = new Wall(this.game, c, r, this.global_position);
+                    this.tiles[r][c] = new Wall(this.game, this, c, r, this.global_position);
                 } else {
                     let t = shuffle(WALKABLE_TILES)[0];
-                    this.tiles[r][c] = new t(this.game, c, r, this.global_position);//Floor(this.game, c, r);
+                    this.tiles[r][c] = new t(this.game, this, c, r, this.global_position);
                     passableTiles++;
                 }
             }
@@ -198,7 +207,7 @@ class GameMap {
     // get a tile in range
     getTile(c, r) {
         if (this.inBounds(c, r)) return this.tiles[r][c];
-        else return new Wall(this.game, c, r, this.global_position);
+        else return new Wall(this.game, this, c, r, this.global_position);
     }
 
     // get a randomly walkable tile without a monster already in it

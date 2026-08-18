@@ -97,3 +97,7 @@ const LAZY_TREE = new Selector([
     new Sequence([isPlayerNearby, chasePlayer]),
     wander,
 ]);
+
+// wander locked to area (like NPC)
+// patrol/chase/attack
+// 

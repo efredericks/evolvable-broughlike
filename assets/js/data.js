@@ -95,6 +95,14 @@ const SPELL_COST = {
     TREE_RING: 6,
 }
 
+// text descriptions for enemies
+const AIArchetypes = new Map([
+    [LAZY_TREE, { name: 'Lazy', desc: 'Only chase player if within 3 cells' }],
+    [SKITTISH_TREE, { name: 'Skittish', desc: 'Flee if low on HP, otherwise chase' }],
+    [CHASE_TREE, { name: 'Chase', desc: 'Aways chase' }],
+]);
+
+
 const AIType = {
     random: 0,
     NN: 1,

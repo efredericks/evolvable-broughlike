@@ -1,6 +1,17 @@
 class Agent {
-    constructor(game) {
+    // `unit` is the Monster (typically the player) this agent drives.
+    // `game` is optional and only needed for agents that read live-game-only
+    // state; pathing/movement itself should go through `unit`.
+    constructor(unit = null, game = null) {
+        this.unit = unit;
         this.game = game;
+    }
+
+    // allows an agent to be constructed before its unit exists (e.g. the live
+    // game builds its agent before the player is spawned) and rebound later,
+    // or reused across GA candidates by pointing it at a new unit each time.
+    setUnit(unit) {
+        this.unit = unit;
     }
 
     act() { }
@@ -8,8 +19,8 @@ class Agent {
 
 // behavior tree-based agent
 class BehaviorTreeAgent extends Agent {
-    constructor(game) {
-        super(game);
+    constructor(unit, game = null) {
+        super(unit, game);
         this.tree = null;
     }
 
@@ -24,18 +35,18 @@ class BehaviorTreeAgent extends Agent {
 
 // move randomly
 class RandomAgent extends Agent {
-    constructor(game) { super(game); }
+    constructor(unit, game = null) { super(unit, game); }
 
     act() {
         let next_dir = shuffle(DIRS)[0];
-        this.game.player.tryMove(next_dir[0], next_dir[1]);
+        this.unit.tryMove(next_dir[0], next_dir[1]);
     }
 }
 
 // weight movements according to direction towards staircases
 class DirectedRandomAgent extends Agent {
-    constructor(game) {
-        super(game);
+    constructor(unit, game = null) {
+        super(unit, game);
         this.isProcessing = false;
     }
 
@@ -49,7 +60,7 @@ class DirectedRandomAgent extends Agent {
 
     // bias intensity multiplier
     // biasDirection(x, y, destx, desty, biasIntensity = 2) {
-    //     let tile = this.game.getCurrentGameMap().getTile(x, y);
+    //     let tile = this.unit.getGameMap().getTile(x, y);
     //     let valid_neighbors = tile.getAdjacentPassableNeighbors();
 
     //     if (valid_neighbors.length == 0) return null;
@@ -85,12 +96,12 @@ class DirectedRandomAgent extends Agent {
 
     // bias intensity multiplier — global coordinates
     biasDirection(x, y, destGlobalX, destGlobalY, biasIntensity = 2) {
-        let tile = this.game.getCurrentGameMap().getTile(x, y);
+        let tile = this.unit.getGameMap().getTile(x, y);
         let valid_neighbors = tile.getAdjacentPassableNeighbors();
 
         if (valid_neighbors.length == 0) return null;
 
-        const { c: chunkCol, r: chunkRow } = this.game.player.global_position;
+        const { c: chunkCol, r: chunkRow } = this.unit.global_position;
 
         let choice_score = 0;
         const candidates = valid_neighbors.map(neighbor => {
@@ -117,12 +128,12 @@ class DirectedRandomAgent extends Agent {
     act() {
         if (this.isProcessing) return;
 
-        const player = this.game.player;
+        const player = this.unit;
         const { c: chunkC, r: chunkR } = player.global_position;
         const localX = player.tile.x;
         const localY = player.tile.y;
 
-        const stairsMap = this.game.getGameMap(GRID_COLS - 1, GRID_ROWS - 1);
+        const stairsMap = player.tile.game_map.getWorldMap(GRID_COLS - 1, GRID_ROWS - 1);
         if (!stairsMap || !stairsMap.stairs_tile) return;
 
         const destGlobal = this.toGlobal(
@@ -133,7 +144,7 @@ class DirectedRandomAgent extends Agent {
         const directions = [{ dx: 0, dy: -1 }, { dx: 0, dy: 1 }, { dx: -1, dy: 0 }, { dx: 1, dy: 0 }];
 
         // neighbors within the current chunk (for validating in-bounds moves)
-        const tile = this.game.getCurrentGameMap().getTile(localX, localY);
+        const tile = player.tile.game_map.getTile(localX, localY);
         const passableNeighbors = tile.getAdjacentPassableNeighbors();
 
         let candidates = [];
@@ -161,7 +172,7 @@ class DirectedRandomAgent extends Agent {
 
                 const chunkExists = newChunkC >= 0 && newChunkC < GRID_COLS && newChunkR >= 0 && newChunkR < GRID_ROWS;
                 if (chunkExists) {
-                    const destMap = this.game.getGameMap(newChunkC, newChunkR);
+                    const destMap = player.tile.game_map.getWorldMap(newChunkC, newChunkR);
                     const destTile = destMap.getTile(wrappedX, wrappedY);
                     // best-effort passability check — adjust property name if yours differs
                     const isPassable = destTile && destTile.passable !== false;
@@ -197,7 +208,7 @@ class DirectedRandomAgent extends Agent {
 
         try {
             this.isProcessing = true;
-            this.game.player.tryMove(chosen.dx, chosen.dy);
+            this.unit.tryMove(chosen.dx, chosen.dy);
         } finally {
             this.isProcessing = false;
         }
@@ -206,21 +217,21 @@ class DirectedRandomAgent extends Agent {
     // act() {
     //     if (this.isProcessing) return;
 
-    //     let next_dir = this.biasDirection(this.game.player.tile.x, this.game.player.tile.y, this.game.getCurrentGameMap().stairs_tile.x, this.game.getCurrentGameMap().stairs_tile.y, 4);
+    //     let next_dir = this.biasDirection(this.unit.tile.x, this.unit.tile.y, this.unit.getGameMap().stairs_tile.x, this.unit.getGameMap().stairs_tile.y, 4);
     //     if (next_dir) {
     //         try {
     //             this.isProcessing = true;
-    //             const dx = next_dir.x - this.game.player.tile.x;
-    //             const dy = next_dir.y - this.game.player.tile.y;
+    //             const dx = next_dir.x - this.unit.tile.x;
+    //             const dy = next_dir.y - this.unit.tile.y;
 
-    //             this.game.player.tryMove(dx, dy);
+    //             this.unit.tryMove(dx, dy);
     //         } finally {
     //             this.isProcessing = false;
     //         }
     //     }
 
     //     // if (next_dir != null)
-    //     // this.game.player.tryMove(next_dir.x - this.game.player.tile.x, next_dir.y - this.game.player.tile.y);
+    //     // this.unit.tryMove(next_dir.x - this.unit.tile.x, next_dir.y - this.unit.tile.y);
     // }
 }
 

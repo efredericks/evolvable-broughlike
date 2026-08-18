@@ -41,6 +41,38 @@ class Evolvable {
         this.evolution_done = false;
 
         this.population = [];
+        this.execute();
+    }
+
+    execute() {
+        this.initializePopulation();
+        for (let gen = 0; gen < this.generations; gen++) {
+            console.log(`Evaluating generation ${gen} with population size ${this.population.length}.`);
+            this.runGeneration();
+        }
+
+        console.log("Evolution done.");
+        console.log(this.population)
+    }
+
+    initializePopulation() {
+        let num_to_init = this.population_size - this.population.length; // allow for backfill
+        for (let _ = 0; _ < num_to_init; _++) {
+            let pmap = [];
+            for (let r = 0; r < GRID_ROWS; r++) {
+                pmap[r] = [];
+                for (let c = 0; c < GRID_COLS; c++) {
+                    pmap[r][c] = new GameMap(this.game, c, r, pmap);
+                    pmap[r][c].generateLevelFromWorld(c, r);
+                    pmap[r][c].spawn_rate = 1500;
+                    pmap[r][c].spawn_counter = pmap[r][c].spawn_rate;
+                }
+            }
+            // staircase in last corner
+            pmap[GRID_ROWS - 1][GRID_COLS - 1].stairs_tile = pmap[GRID_ROWS - 1][GRID_COLS - 1].randomPassableTile();
+            pmap[GRID_ROWS - 1][GRID_COLS - 1].stairs_tile.replace(StairsDown);
+            this.population.push(pmap);
+        }
     }
 
     runGeneration() {
@@ -48,22 +80,23 @@ class Evolvable {
     }
 
     evaluate() {
+        return shuffle(this.population)[0];
+        // // old generate
+        // this.game.game_maps = [];
+        // for (let r = 0; r < GRID_ROWS; r++) {
+        //     this.game.game_maps[r] = [];
+        //     for (let c = 0; c < GRID_COLS; c++) {
+        //         this.game.game_maps[r][c] = new GameMap(this.game, c, r, this.game.game_maps);
+        //         this.game.game_maps[r][c].generateLevelFromWorld(c, r);
 
-        // old generate
-        for (let r = 0; r < GRID_ROWS; r++) {
-            this.game.game_maps[r] = [];
-            for (let c = 0; c < GRID_COLS; c++) {
-                this.game.game_maps[r][c] = new GameMap(this.game, c, r);
-                this.game.game_maps[r][c].generateLevelFromWorld(c, r);
+        //         this.game.game_maps[r][c].spawn_rate = 15;
+        //         this.game.game_maps[r][c].spawn_counter = this.game.game_maps[r][c].spawn_rate;
+        //     }
+        // }
 
-                this.game.game_maps[r][c].spawn_rate = 15;
-                this.game.game_maps[r][c].spawn_counter = this.game.game_maps[r][c].spawn_rate;
-            }
-        }
-
-        // staircase in last corner
-        this.game.game_maps[GRID_ROWS - 1][GRID_COLS - 1].stairs_tile = this.game.game_maps[GRID_ROWS - 1][GRID_COLS - 1].randomPassableTile();
-        this.game.game_maps[GRID_ROWS - 1][GRID_COLS - 1].stairs_tile.replace(StairsDown);
+        // // staircase in last corner
+        // this.game.game_maps[GRID_ROWS - 1][GRID_COLS - 1].stairs_tile = this.game.game_maps[GRID_ROWS - 1][GRID_COLS - 1].randomPassableTile();
+        // this.game.game_maps[GRID_ROWS - 1][GRID_COLS - 1].stairs_tile.replace(StairsDown);
     }
 }
 class Game {
@@ -114,7 +147,10 @@ class Game {
                 // setup evolver
                 const gens = document.getElementById("gens").value;
                 const popsize = document.getElementById("popsize").value;
-                this.evolvable = new Evolvable(this, gens, popsize);
+                const mutrate = document.getElementById("mutation").value;
+                const xoverrate = document.getElementById("xover").value;
+                const nelites = document.getElementById("elites").value;
+                this.evolvable = new Evolvable(this, gens, popsize, xoverrate, mutrate, elites);
 
                 if (e.key == "C") {
                     this.clearScores();
@@ -177,8 +213,8 @@ class Game {
         // agent things
         this.autoplay = false;
         this.interval_speed = 15; // 150
-        // this.agent = new RandomAgent(this);
-        this.agent = new DirectedRandomAgent(this);
+        // this.agent = new RandomAgent(this.player);
+        this.agent = new DirectedRandomAgent(null, this);
 
         // this.nn = new NeuralNetwork([2,3,3,3,4,3,2], [relu, sigmoid]);
         // console.log(this.nn.forward([1,0]))
@@ -308,7 +344,8 @@ class Game {
         // this.spawn_counter = this.spawn_rate;
 
         this.game_maps = [];
-        this.evolvable.evaluate();
+        this.game_maps = this.evolvable.evaluate();
+
         // for (let r = 0; r < GRID_ROWS; r++) {
         //     this.game_maps[r] = [];
         //     for (let c = 0; c < GRID_COLS; c++) {
@@ -325,6 +362,7 @@ class Game {
         // this.game_maps[GRID_ROWS - 1][GRID_COLS - 1].stairs_tile.replace(StairsDown);
 
         this.player = new Player(this, this.game_maps[0][0].randomPassableTile());
+        this.agent.setUnit(this.player);
         this.player.hp = hp;
         this.player.max_hp = hp;
         console.log(this.player)
@@ -415,8 +453,8 @@ class Game {
             // weak 2-state animation
             this.animTimer++;
             let offsetActive = false;
-            const half_interval = this.interval_speed;//Math.floor(this.interval_speed / 2);
-            if (this.animTimer > this.interval_speed*2) {
+            const half_interval = this.interval_speed; //Math.floor(this.interval_speed / 2);
+            if (this.animTimer > this.interval_speed * 2) {
                 this.animTimer = 0;
             } else if (this.animTimer > half_interval) {
                 offsetActive = true;
@@ -675,6 +713,17 @@ class Game {
             let t = this.getCurrentGameMap().tiles[hoverRow][hoverCol];
             if (t.monster != null) {
                 this.drawText(`${t.monster.name} [${t.monster.hp}/${t.monster.max_hp}]`, 20, false, 250, 'yellow');
+
+                if (!t.monster.isPlayer) {
+                    const infobox = document.getElementById("info");
+                    if (t.monster.behavior_tree != null) { // has a behavior tree
+                        const ai_info = AIArchetypes.get(t.monster.behavior_tree);
+                        infobox.innerHTML = `<b>${t.monster.name}</b>: <i>${ai_info.name}</i> - ${ai_info.desc}`;
+                    } else { // no tree
+                        infobox.innerHTML = `<b>${t.monster.name}</b>: <i>No behavior tree!</i>`;
+                    }
+                }
+
             } else if (t.item != null) {
                 this.drawText(`${t.item.name}`, 20, false, 250, 'yellow');
             }

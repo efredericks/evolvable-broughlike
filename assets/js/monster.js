@@ -32,8 +32,10 @@ class Monster {
         this.global_position = tile.global_position;
 
         // behavior tree
-        this.behavior_tree = SKITTISH_TREE;//LAZY_TREE;// CHASE_TREE;  // default is to chase player
+        this.behavior_tree = shuffle([SKITTISH_TREE, LAZY_TREE, CHASE_TREE])[0];  // default is to chase player
     }
+
+    // TBD - make sure spell actually is castable based on position (i.e., if being blocked by tree don't allow)
 
     // check if spell can be cast based on available mana
     // shake screen lightly if not
@@ -50,9 +52,12 @@ class Monster {
         }
     }
 
-    // helper to grab chunk's map
+    // helper to grab this monster's current map — resolved directly from the
+    // tile it's standing on, not from any shared/global lookup, so this works
+    // identically whether `this.tile` belongs to the live game or an isolated
+    // GA candidate map.
     getGameMap() {
-        return this.game.getGameMap(this.global_position.c, this.global_position.r);
+        return this.tile.game_map;
     }
 
     // draw the sprite and lerp if needed
@@ -114,8 +119,8 @@ class Monster {
 
         y2 += h;
         this.game.ctx.fillStyle = "#ff000033";
-        this.game.ctx.fillRect(x, y, tileSize, h);
-        if (w2 > 0) {
+        this.game.ctx.fillRect(x, y2, tileSize, h);
+        if (mana_w2 > 0) {
             this.game.ctx.fillStyle = "#00d9ff";
             this.game.ctx.fillRect(x2, y2, mana_w2, innerHeight);
         }
@@ -127,7 +132,11 @@ class Monster {
     }
 
     tryMove(dx, dy) {
+        if (dx === 0 && dy === 0) return true; // wait
+
         let newTile = this.tile.getNeighbor(dx, dy);
+        if (!newTile) return false;
+
         // console.log(newTile)
         if (newTile.passable) {
             this.lastMove = [dx, dy];
@@ -149,24 +158,24 @@ class Monster {
             // right
             if (newTile.x > numTiles - 1 && this.isPlayer && this.global_position.c < GRID_COLS - 1) {
                 this.global_position.c++;
-                let moveTile = this.getGameMap().getTile(0, this.tile.y);
+                let moveTile = this.tile.game_map.getWorldMap(this.global_position.c, this.global_position.r).getTile(0, this.tile.y);
                 this.move(moveTile, true);
                 // left
             } else if (newTile.x < 0 && this.isPlayer && this.global_position.c > 0) {
                 this.global_position.c--;
-                let moveTile = this.getGameMap().getTile(numTiles - 1, this.tile.y);
+                let moveTile = this.tile.game_map.getWorldMap(this.global_position.c, this.global_position.r).getTile(numTiles - 1, this.tile.y);
                 this.move(moveTile, true);
             }
 
             // up
             if (newTile.y > numTiles - 1 && this.isPlayer && this.global_position.r < GRID_ROWS - 1) {
                 this.global_position.r++;
-                let moveTile = this.getGameMap().getTile(this.tile.x, 0);
+                let moveTile = this.tile.game_map.getWorldMap(this.global_position.c, this.global_position.r).getTile(this.tile.x, 0);
                 this.move(moveTile, true);
                 // down
             } else if (newTile.y < 0 && this.isPlayer && this.global_position.r > 0) {
                 this.global_position.r--;
-                let moveTile = this.getGameMap().getTile(this.tile.x, numTiles - 1);
+                let moveTile = this.tile.game_map.getWorldMap(this.global_position.c, this.global_position.r).getTile(this.tile.x, numTiles - 1);
                 this.move(moveTile, true);
             }
         }
@@ -321,6 +330,7 @@ class Trap extends Monster {
         this.spell = shuffle([spells.CROSS, spells.EX])[0];
         this.timer = 30;//timer;
         this.max_timer = 30;//timer;
+        this.behavior_tree = null;
     }
 
     update() {
